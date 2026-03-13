@@ -12,6 +12,7 @@ interface DbResult {
   source: string;
   market: string;
   winning_number: string | null;
+  winning_number_2d: string | null;
   status: string;
 }
 
@@ -39,7 +40,7 @@ export default function AdminPage() {
       );
       const { data } = await supabase
         .from('stock_results')
-        .select('id, source, market, winning_number, status')
+        .select('id, source, market, winning_number, winning_number_2d, status')
         .eq('source', activeBrand)
         .eq('round_date', selectedDate)
         .order('close_time', { ascending: true });
@@ -75,7 +76,7 @@ export default function AdminPage() {
     setSeeding(false);
   };
 
-  const handleSave = async (marketCode: string, winningNumber: string) => {
+  const handleSave = async (marketCode: string, winningNumber: string, winningNumber2d: string) => {
     setSavingMarkets((prev) => new Set(prev).add(marketCode));
     try {
       const res = await fetch('/api/admin/results', {
@@ -85,6 +86,7 @@ export default function AdminPage() {
           source: activeBrand,
           market: marketCode,
           winning_number: winningNumber,
+          winning_number_2d: winningNumber2d,
           round_date: selectedDate,
         }),
       });
@@ -193,6 +195,7 @@ export default function AdminPage() {
                 key={`${activeBrand}-${market.code}`}
                 market={market}
                 savedNumber={dbRow?.winning_number ?? undefined}
+                savedNumber2d={dbRow?.winning_number_2d ?? undefined}
                 status={
                   isSaving
                     ? 'saving'
@@ -200,7 +203,7 @@ export default function AdminPage() {
                       ? 'saved'
                       : 'pending'
                 }
-                onSave={(num) => handleSave(market.code, num)}
+                onSave={(num, num2d) => handleSave(market.code, num, num2d)}
               />
             );
           })}

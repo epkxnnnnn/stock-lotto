@@ -11,6 +11,8 @@ export interface Market {
   order: number;
 }
 
+export type GenerationMethod = 'auto' | 'manual';
+
 export interface StockResult {
   id: string;
   source: Brand;
@@ -19,10 +21,12 @@ export interface StockResult {
   marketLabelLo?: string;
   flagEmoji: string;
   winningNumber: string | null;
+  winningNumber2d: string | null;
   roundDate: string; // YYYY-MM-DD
   closeTime: string; // ISO timestamp
   resultTime: string | null;
   status: ResultStatus;
+  generationMethod: GenerationMethod | null;
   createdAt: string;
   updatedAt: string;
 }

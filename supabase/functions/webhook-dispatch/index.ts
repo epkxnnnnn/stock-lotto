@@ -50,6 +50,7 @@ Deno.serve(async (req) => {
       market_label_th: record.market_label_th,
       flag_emoji: record.flag_emoji,
       winning_number: record.winning_number,
+      winning_number_2d: record.winning_number_2d ?? null,
       round_date: record.round_date,
       result_time: record.result_time,
       timestamp: new Date().toISOString(),

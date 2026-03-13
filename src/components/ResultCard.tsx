@@ -18,6 +18,12 @@ export default function ResultCard({ result }: ResultCardProps) {
           : 'border-[var(--border)] hover:border-[var(--brand-primary)]/30'
       }`}
     >
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-[0.06] group-hover:opacity-[0.12] transition-opacity pointer-events-none rounded-[14px]"
+        style={{
+          backgroundImage: `url('/images/card-frame-${result.source}.png')`,
+        }}
+      />
       <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[var(--brand-accent)] to-[var(--brand-dark)] opacity-0 transition-opacity group-hover:opacity-100" />
 
       <span className="absolute top-2.5 right-3 text-[10px] px-2 py-0.5 rounded font-semibold tracking-wider">
@@ -50,7 +56,18 @@ export default function ResultCard({ result }: ResultCardProps) {
           รอผล...
         </span>
       ) : (
-        <NumberRenderer number={result.winningNumber!} />
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] text-[var(--text-muted)] font-thai">3 ตัวบน</span>
+            <NumberRenderer number={result.winningNumber!} size="md" />
+          </div>
+          {result.winningNumber2d && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] text-[var(--text-muted)] font-thai">2 ตัวล่าง</span>
+              <NumberRenderer number={result.winningNumber2d} size="sm" />
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

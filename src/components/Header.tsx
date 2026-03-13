@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getBrandConfig } from '@/lib/theme/config';
 
 const LineSvg = () => (
@@ -16,8 +17,15 @@ export default function Header() {
       <div className="max-w-[1200px] mx-auto px-5">
         <div className="flex items-center justify-between max-md:flex-col max-md:gap-4">
           <Link href="/" className="flex items-center gap-3.5 no-underline">
-            <div className="w-[52px] h-[52px] bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-light)] rounded-xl flex items-center justify-center font-heading text-[22px] text-[var(--bg-primary)] tracking-wider shadow-[0_4px_20px_var(--brand-glow)]">
-              {config.logoText}
+            <div className="w-[52px] h-[52px] rounded-xl flex items-center justify-center shadow-[0_4px_20px_var(--brand-glow)] overflow-hidden relative">
+              <Image
+                src={config.brand === 'vvip' ? '/images/logo-vvip.png' : '/images/logo-platinum.png'}
+                alt={config.siteName}
+                width={52}
+                height={52}
+                className="object-cover"
+                priority
+              />
             </div>
             <div>
               <h1 className="font-heading text-[28px] tracking-[3px] leading-none gradient-text">

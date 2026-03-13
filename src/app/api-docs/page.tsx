@@ -141,10 +141,12 @@ export default function ApiDocsPage() {
       "market_label_th": "ดาวโจนส์ VVIP",
       "flag_emoji": "🇺🇸",
       "winning_number": "847",
+      "winning_number_2d": "53",
       "round_date": "2026-03-13",
       "close_time": "2026-03-13T14:01:00+07:00",
       "result_time": "2026-03-13T14:02:00+07:00",
-      "status": "resulted"
+      "status": "resulted",
+      "generation_method": "auto"
     }
   ]
 }
@@ -173,6 +175,7 @@ export default function ApiDocsPage() {
   "market_label_th": "ดาวโจนส์ VVIP",
   "flag_emoji": "🇺🇸",
   "winning_number": "847",
+  "winning_number_2d": "53",
   "round_date": "2026-03-13",
   "timestamp": "2026-03-13T14:02:00Z"
 }`}</CodeBlock>

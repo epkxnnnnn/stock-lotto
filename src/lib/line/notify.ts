@@ -81,49 +81,86 @@ export function buildResultNotification(
   marketName: string,
   flagEmoji: string,
   winningNumber: string,
-  siteName: string
+  siteName: string,
+  winningNumber2d: string | null = null
 ): FlexMessage {
+  const altParts = [`3 ตัวบน: ${winningNumber}`];
+  if (winningNumber2d) altParts.push(`2 ตัวล่าง: ${winningNumber2d}`);
+
+  const bodyContents: object[] = [
+    {
+      type: 'text',
+      text: siteName,
+      weight: 'bold',
+      size: 'sm',
+      color: '#888888',
+    },
+    {
+      type: 'text',
+      text: `${flagEmoji} ${marketName}`,
+      weight: 'bold',
+      size: 'lg',
+      margin: 'md',
+    },
+    {
+      type: 'text',
+      text: '3 ตัวบน',
+      size: 'xs',
+      color: '#aaaaaa',
+      align: 'center',
+      margin: 'lg',
+    },
+    {
+      type: 'text',
+      text: winningNumber,
+      weight: 'bold',
+      size: '3xl',
+      color: '#D4A829',
+      align: 'center',
+      margin: 'sm',
+    },
+  ];
+
+  if (winningNumber2d) {
+    bodyContents.push(
+      {
+        type: 'text',
+        text: '2 ตัวล่าง',
+        size: 'xs',
+        color: '#aaaaaa',
+        align: 'center',
+        margin: 'md',
+      },
+      {
+        type: 'text',
+        text: winningNumber2d,
+        weight: 'bold',
+        size: 'xxl',
+        color: '#D4A829',
+        align: 'center',
+        margin: 'sm',
+      }
+    );
+  }
+
+  bodyContents.push({
+    type: 'text',
+    text: new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
+    size: 'xs',
+    color: '#aaaaaa',
+    margin: 'md',
+    align: 'center',
+  });
+
   return {
     type: 'flex',
-    altText: `${siteName}: ${marketName} = ${winningNumber}`,
+    altText: `${siteName}: ${marketName} — ${altParts.join(', ')}`,
     contents: {
       type: 'bubble',
       body: {
         type: 'box',
         layout: 'vertical',
-        contents: [
-          {
-            type: 'text',
-            text: siteName,
-            weight: 'bold',
-            size: 'sm',
-            color: '#888888',
-          },
-          {
-            type: 'text',
-            text: `${flagEmoji} ${marketName}`,
-            weight: 'bold',
-            size: 'lg',
-            margin: 'md',
-          },
-          {
-            type: 'text',
-            text: winningNumber,
-            weight: 'bold',
-            size: '3xl',
-            color: '#D4A829',
-            align: 'center',
-            margin: 'lg',
-          },
-          {
-            type: 'text',
-            text: new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
-            size: 'xs',
-            color: '#aaaaaa',
-            margin: 'md',
-            align: 'center',
-          },
-        ],
+        contents: bodyContents,
       },
     },
   };

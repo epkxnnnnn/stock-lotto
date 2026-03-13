@@ -23,10 +23,12 @@ function mapRow(r: Record<string, unknown>): StockResult {
     marketLabelTh: r.market_label_th as string,
     flagEmoji: r.flag_emoji as string,
     winningNumber: r.winning_number as string | null,
+    winningNumber2d: (r.winning_number_2d as string | null) ?? null,
     roundDate: r.round_date as string,
     closeTime: r.close_time as string,
     resultTime: r.result_time as string | null,
     status: r.status as 'open' | 'closed' | 'resulted',
+    generationMethod: (r.generation_method as 'auto' | 'manual' | null) ?? null,
     createdAt: r.created_at as string,
     updatedAt: r.updated_at as string,
   };
@@ -87,6 +89,7 @@ export default function HomeClient({ initialResults, brand, today }: HomeClientP
                 ? {
                     ...r,
                     winningNumber: (updated.winning_number as string) ?? null,
+                    winningNumber2d: (updated.winning_number_2d as string) ?? null,
                     status: (updated.status as StockResult['status']) ?? r.status,
                     resultTime: (updated.result_time as string) ?? null,
                   }

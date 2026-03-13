@@ -21,6 +21,12 @@ interface MarketResult {
   round_date: string;
 }
 
+interface GeneratedNumbers {
+  winningNumber: string;   // 3-digit (3 ตัวบน)
+  winningNumber2d: string; // 2-digit (2 ตัวล่าง)
+  seed: string;            // hex-encoded random bytes for audit
+}
+
 Deno.serve(async (_req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -54,44 +60,45 @@ Deno.serve(async (_req) => {
       }
     }
 
-    // Step 2: Check closed markets for results
-    // In production, this would call an external source API.
-    // For now, this is a framework that checks if admin has entered results manually.
+    // Step 2: Find closed markets past close_time + 1 minute that need RNG
+    const oneMinAgo = new Date(now.getTime() - 60_000).toISOString();
     const { data: pendingResults, error: pendingErr } = await supabase
       .from('stock_results')
       .select('id, source, market, market_label_th, flag_emoji, winning_number, round_date, close_time, status')
       .eq('round_date', today)
-      .eq('status', 'closed') as { data: MarketResult[] | null; error: { message: string } | null };
+      .eq('status', 'closed')
+      .is('winning_number', null)
+      .lte('close_time', oneMinAgo) as { data: MarketResult[] | null; error: { message: string } | null };
 
     if (pendingErr) {
       return jsonResponse({ error: pendingErr.message }, 500);
     }
 
-    // Step 3: For each closed market, attempt to fetch result from source
-    // This is where you'd integrate with the actual results provider API
+    // Step 3: Generate random numbers for each eligible market
     if (pendingResults && pendingResults.length > 0) {
       for (const market of pendingResults) {
         try {
-          const result = await fetchResultFromSource(market);
-          if (result) {
-            const { error: updateErr } = await supabase
-              .from('stock_results')
-              .update({
-                winning_number: result,
-                status: 'resulted',
-                result_time: now.toISOString(),
-                updated_at: now.toISOString(),
-              })
-              .eq('id', market.id);
+          const generated = generateRandomNumbers();
+          const { error: updateErr } = await supabase
+            .from('stock_results')
+            .update({
+              winning_number: generated.winningNumber,
+              winning_number_2d: generated.winningNumber2d,
+              generation_method: 'auto',
+              generation_seed: generated.seed,
+              status: 'resulted',
+              result_time: now.toISOString(),
+              updated_at: now.toISOString(),
+            })
+            .eq('id', market.id);
 
-            if (!updateErr) {
-              stats.resulted++;
+          if (!updateErr) {
+            stats.resulted++;
 
-              // Trigger webhook notifications
-              await triggerWebhookNotify(market, result);
-            } else {
-              stats.errors++;
-            }
+            // Trigger webhook notifications
+            await triggerWebhookNotify(market, generated.winningNumber, generated.winningNumber2d);
+          } else {
+            stats.errors++;
           }
         } catch {
           stats.errors++;
@@ -115,28 +122,29 @@ Deno.serve(async (_req) => {
 });
 
 /**
- * Fetch result from external source API.
- * Replace this with your actual source API integration.
- * Returns 3-digit winning number or null if not yet available.
+ * Generate cryptographically random 3-digit and 2-digit numbers.
+ * Uses crypto.getRandomValues for uniform distribution.
+ * Returns both numbers plus hex-encoded seed for audit trail.
  */
-async function fetchResultFromSource(
-  _market: MarketResult
-): Promise<string | null> {
-  // TODO: Replace with actual source API call
-  // Example integration:
-  //
-  // const SOURCE_API = Deno.env.get('SOURCE_API_URL');
-  // const SOURCE_KEY = Deno.env.get('SOURCE_API_KEY');
-  //
-  // const res = await fetch(`${SOURCE_API}/results/${market.source}/${market.market}`, {
-  //   headers: { 'Authorization': `Bearer ${SOURCE_KEY}` },
-  // });
-  //
-  // if (!res.ok) return null;
-  // const data = await res.json();
-  // return data.winning_number ?? null;
+function generateRandomNumbers(): GeneratedNumbers {
+  // Get 8 random bytes: enough entropy for both numbers + audit seed
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
 
-  return null; // No external source configured yet
+  // Use first 2 bytes for 3-digit number (0-999)
+  const raw3d = ((bytes[0] << 8) | bytes[1]) % 1000;
+  const winningNumber = raw3d.toString().padStart(3, '0');
+
+  // Use next 2 bytes for 2-digit number (0-99)
+  const raw2d = ((bytes[2] << 8) | bytes[3]) % 100;
+  const winningNumber2d = raw2d.toString().padStart(2, '0');
+
+  // Full 8 bytes as hex seed for auditability
+  const seed = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  return { winningNumber, winningNumber2d, seed };
 }
 
 /**
@@ -144,7 +152,8 @@ async function fetchResultFromSource(
  */
 async function triggerWebhookNotify(
   market: MarketResult,
-  winningNumber: string
+  winningNumber: string,
+  winningNumber2d: string
 ): Promise<void> {
   try {
     const baseUrl = SUPABASE_URL.replace('.supabase.co', '.supabase.co');
@@ -168,6 +177,7 @@ async function triggerWebhookNotify(
       market_label_th: market.market_label_th,
       flag_emoji: market.flag_emoji,
       winning_number: winningNumber,
+      winning_number_2d: winningNumber2d,
       round_date: market.round_date,
       timestamp: new Date().toISOString(),
     };

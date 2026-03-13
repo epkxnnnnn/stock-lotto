@@ -52,6 +52,7 @@ export async function GET(request: NextRequest) {
   const encodedResults = (results as ResultRow[] ?? []).map((r) => ({
     ...r,
     winning_number: r.winning_number ? encodeNumber(r.winning_number as string, glyphMap) : null,
+    winning_number_2d: r.winning_number_2d ? encodeNumber(r.winning_number_2d as string, glyphMap) : null,
   }));
 
   // Encrypt the payload

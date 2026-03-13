@@ -21,10 +21,12 @@ function buildResults(brand: Brand): StockResult[] {
       marketLabelTh: market.labelTh,
       flagEmoji: market.flagEmoji,
       winningNumber: num,
+      winningNumber2d: num ? String(Math.floor(Math.random() * 100)).padStart(2, '0') : null,
       roundDate: today,
       closeTime: `${today}T${market.closeTime}:00+07:00`,
       resultTime: num ? `${today}T${market.closeTime}:00+07:00` : null,
       status,
+      generationMethod: num ? 'auto' as const : null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

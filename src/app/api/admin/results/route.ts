@@ -6,15 +6,16 @@ export async function POST(request: NextRequest) {
   const supabase = createAdminClient();
 
   const body = await request.json();
-  const { source, market, winning_number, round_date } = body as {
+  const { source, market, winning_number, winning_number_2d, round_date } = body as {
     source: string;
     market: string;
     winning_number: string;
+    winning_number_2d: string;
     round_date: string;
   };
 
   // Validate input
-  if (!source || !market || !winning_number || !round_date) {
+  if (!source || !market || !winning_number || !winning_number_2d || !round_date) {
     return NextResponse.json(
       { success: false, error: 'Missing required fields' },
       { status: 400 }
@@ -23,7 +24,14 @@ export async function POST(request: NextRequest) {
 
   if (!/^\d{3}$/.test(winning_number)) {
     return NextResponse.json(
-      { success: false, error: 'Invalid winning number format' },
+      { success: false, error: 'Invalid winning number format (3 digits required)' },
+      { status: 400 }
+    );
+  }
+
+  if (!/^\d{2}$/.test(winning_number_2d)) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid 2-digit number format (2 digits required)' },
       { status: 400 }
     );
   }
@@ -51,6 +59,8 @@ export async function POST(request: NextRequest) {
       .from('stock_results')
       .update({
         winning_number,
+        winning_number_2d,
+        generation_method: 'manual',
         status: 'resulted',
         result_time: new Date().toISOString(),
       })

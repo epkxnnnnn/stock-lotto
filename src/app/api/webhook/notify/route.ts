@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { market_label_th, flag_emoji, winning_number, source, market, round_date } = body;
+  const { market_label_th, flag_emoji, winning_number, winning_number_2d, source, market, round_date } = body;
 
   if (!market_label_th || !winning_number) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     market_label_th,
     flag_emoji,
     winning_number,
+    winning_number_2d: winning_number_2d ?? null,
     round_date,
     timestamp: new Date().toISOString(),
   });
@@ -37,7 +38,8 @@ export async function POST(request: NextRequest) {
     market_label_th,
     flag_emoji,
     winning_number,
-    config.siteNameTh
+    config.siteNameTh,
+    winning_number_2d ?? null
   );
   await broadcastMessage([lineMessage]);
 
