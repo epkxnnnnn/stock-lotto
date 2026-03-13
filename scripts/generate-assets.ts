@@ -81,6 +81,20 @@ const assets: AssetConfig[] = [
       'Abstract luxury dark background texture with subtle silver and blue light rays and soft bokeh effects. Main color is very dark #080a0e with silver #a8b4c4 and steel blue #7eb8e0 glow effects scattered throughout. Wide panoramic banner format. Premium luxurious atmospheric feel. No text, no objects, just abstract ambient light.',
     aspectRatio: '16:9',
   },
+  {
+    name: 'OG Image VVIP',
+    filename: 'og-vvip.png',
+    prompt:
+      'Social media Open Graph preview card for a premium "Stock VVIP" stock lottery results website. Dark background #0a0a0f. Large elegant gold text "Stock VVIP" in the center with Thai subtitle "หวยหุ้น VVIP" below. Gold metallic colors #d4a829 and #f0d060. Subtle gold ornamental border frame. Professional, luxurious, modern design. Must include the text clearly readable.',
+    aspectRatio: '16:9',
+  },
+  {
+    name: 'OG Image Platinum',
+    filename: 'og-platinum.png',
+    prompt:
+      'Social media Open Graph preview card for a premium "Stock Platinums" stock lottery results website. Dark background #080a0e. Large elegant silver text "Stock Platinums" in the center with Thai subtitle "หวยหุ้น แพลทินัม" below. Silver metallic colors #a8b4c4 and #d0dae8 with steel blue accent #7eb8e0. Subtle silver ornamental border frame. Professional, luxurious, modern design. Must include the text clearly readable.',
+    aspectRatio: '16:9',
+  },
 ];
 
 async function generateAsset(asset: AssetConfig, retryCount = 0): Promise<boolean> {

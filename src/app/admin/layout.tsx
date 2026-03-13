@@ -14,6 +14,17 @@ export default function AdminLayout({
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Prevent search engines from indexing admin pages
+    let robotsMeta = document.querySelector('meta[name="robots"]');
+    if (!robotsMeta) {
+      robotsMeta = document.createElement('meta');
+      robotsMeta.setAttribute('name', 'robots');
+      document.head.appendChild(robotsMeta);
+    }
+    robotsMeta.setAttribute('content', 'noindex, nofollow');
+  }, []);
+
+  useEffect(() => {
     const stored = sessionStorage.getItem('admin_auth');
     if (stored === 'true') {
       setAuthenticated(true);

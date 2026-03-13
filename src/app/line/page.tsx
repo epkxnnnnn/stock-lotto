@@ -1,5 +1,19 @@
+import type { Metadata } from 'next';
 import { getBrandConfig } from '@/lib/theme/config';
 import SectionTitle from '@/components/SectionTitle';
+
+const lineConfig = getBrandConfig();
+
+export const metadata: Metadata = {
+  title: `LINE Official Account — แจ้งเตือนผลหวยหุ้น ${lineConfig.siteNameTh}`,
+  description: `เพิ่มเพื่อน LINE OA ${lineConfig.siteNameTh} รับแจ้งเตือนผลหวยหุ้นทุกรอบแบบเรียลไทม์ ฟรี ไม่มีค่าใช้จ่าย`,
+  openGraph: {
+    title: `LINE OA — แจ้งเตือนผลหวยหุ้น ${lineConfig.siteNameTh}`,
+    description: `เพิ่มเพื่อน LINE OA ${lineConfig.siteNameTh} รับแจ้งเตือนผลหวยหุ้นทุกรอบแบบเรียลไทม์ ฟรี`,
+    url: '/line',
+  },
+  alternates: { canonical: '/line' },
+};
 
 export default function LinePage() {
   const config = getBrandConfig();

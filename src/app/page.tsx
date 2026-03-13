@@ -1,8 +1,22 @@
+import type { Metadata } from 'next';
 import { getBrandConfig } from '@/lib/theme/config';
 import { getMarkets } from '@/lib/theme/rounds';
 import HomeClient from '@/components/HomeClient';
 import type { StockResult } from '@/types';
 import { createClient } from '@supabase/supabase-js';
+
+const homeConfig = getBrandConfig();
+const homeRoundCount = homeConfig.brand === 'platinum' ? 15 : 13;
+
+export const metadata: Metadata = {
+  title: `${homeConfig.siteNameTh} — ผลหวยหุ้นวันนี้ ${homeRoundCount} รอบ อัพเดทเรียลไทม์ | ${homeConfig.siteName}`,
+  description: `ตรวจผลหวยหุ้นวันนี้ ${homeConfig.siteNameTh} ${homeRoundCount} รอบ ดาวโจนส์ นิเคอิ ฮั่งเส็ง จีน เกาหลี ไต้หวัน สิงคโปร์ เวียดนาม อัพเดทเรียลไทม์ทุกรอบ ฟรี`,
+  openGraph: {
+    title: `${homeConfig.siteNameTh} — ผลหวยหุ้นวันนี้ อัพเดทเรียลไทม์`,
+    description: `ตรวจผลหวยหุ้นวันนี้ ${homeConfig.siteNameTh} ครบ ${homeRoundCount} รอบ อัพเดทผลทุกตลาดหุ้นทั่วโลก`,
+    url: '/',
+  },
+};
 
 async function getResults(brand: string, today: string): Promise<StockResult[]> {
   const supabase = createClient(

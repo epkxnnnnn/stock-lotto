@@ -47,14 +47,52 @@ const themeStyleContent = `:root {
   }`;
 
 const faviconPath = brand === 'platinum' ? '/images/logo-platinum.png' : '/images/logo-vvip.png';
+const ogImagePath = brand === 'platinum' ? '/images/og-platinum.png' : '/images/og-vvip.png';
+
+const roundCount = brand === 'platinum' ? 15 : 13;
+const siteDescription =
+  brand === 'platinum'
+    ? `${config.siteNameTh} ผลหวยหุ้นแพลทินัม ${roundCount} รอบต่อวัน ตรวจผลหวยหุ้นออนไลน์ อัพเดทเรียลไทม์ ครบทุกตลาดหุ้นทั่วโลก`
+    : `${config.siteNameTh} ผลหวยหุ้น VVIP ${roundCount} รอบต่อวัน ตรวจผลหวยหุ้นออนไลน์ อัพเดทเรียลไทม์ ครบทุกตลาดหุ้นทั่วโลก`;
+const siteKeywords =
+  brand === 'platinum'
+    ? 'หวยหุ้นแพลทินัม, ผลหวยหุ้น, หวยหุ้นออนไลน์, Stock Platinums, ตรวจหวยหุ้น, หวยหุ้นวันนี้, ผลหวยหุ้นย้อนหลัง'
+    : 'หวยหุ้น VVIP, ผลหวยหุ้น, หวยหุ้นออนไลน์, Stock VVIP, ตรวจหวยหุ้น, หวยหุ้นวันนี้, ผลหวยหุ้นย้อนหลัง';
 
 export const metadata: Metadata = {
-  title: `${config.siteName} - ${config.siteNameTh}`,
-  description: `${config.siteNameTh} ผลหวยหุ้น ออนไลน์ อัพเดทผลทุกรอบ`,
+  metadataBase: new URL(`https://${config.domain}`),
+  title: {
+    default: `${config.siteNameTh} — ผลหวยหุ้นออนไลน์ ${roundCount} รอบ อัพเดทเรียลไทม์ | ${config.siteName}`,
+    template: `%s | ${config.siteName}`,
+  },
+  description: siteDescription,
+  keywords: siteKeywords,
   icons: {
     icon: faviconPath,
     apple: faviconPath,
   },
+  openGraph: {
+    title: `${config.siteNameTh} — ผลหวยหุ้นออนไลน์ อัพเดทเรียลไทม์`,
+    description: siteDescription,
+    url: '/',
+    siteName: config.siteName,
+    locale: 'th_TH',
+    type: 'website',
+    images: [{ url: ogImagePath, width: 1200, height: 630, alt: `${config.siteNameTh} ผลหวยหุ้นออนไลน์` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${config.siteNameTh} — ผลหวยหุ้นออนไลน์ อัพเดทเรียลไทม์`,
+    description: siteDescription,
+    images: [ogImagePath],
+  },
+  alternates: { canonical: '/' },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  other: { 'theme-color': brand === 'platinum' ? '#a8b4c4' : '#d4a829' },
 };
 
 export default function RootLayout({

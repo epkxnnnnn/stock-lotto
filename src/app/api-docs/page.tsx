@@ -1,5 +1,20 @@
+import type { Metadata } from 'next';
 import { getBrandConfig } from '@/lib/theme/config';
 import SectionTitle from '@/components/SectionTitle';
+
+const docsConfig = getBrandConfig();
+
+export const metadata: Metadata = {
+  title: `API Documentation — ${docsConfig.siteName} Agent API`,
+  description: `${docsConfig.siteName} Agent API documentation. REST API for whitelisted agents — results, schedules, rates, webhooks. API key authentication, rate limiting, IP whitelist.`,
+  openGraph: {
+    title: `API Documentation — ${docsConfig.siteName} Agent API`,
+    description: `REST API documentation for ${docsConfig.siteName} agents. Results, schedules, rates, and webhook push.`,
+    url: '/api-docs',
+  },
+  alternates: { canonical: '/api-docs' },
+  robots: { index: false, follow: false },
+};
 
 const endpoints = [
   {
