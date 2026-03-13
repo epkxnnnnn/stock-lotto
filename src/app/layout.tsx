@@ -46,9 +46,15 @@ const themeStyleContent = `:root {
     --body-texture: ${bodyTexture};
   }`;
 
+const faviconPath = brand === 'platinum' ? '/images/logo-platinum.png' : '/images/logo-vvip.png';
+
 export const metadata: Metadata = {
   title: `${config.siteName} - ${config.siteNameTh}`,
   description: `${config.siteNameTh} ผลหวยหุ้น ออนไลน์ อัพเดทผลทุกรอบ`,
+  icons: {
+    icon: faviconPath,
+    apple: faviconPath,
+  },
 };
 
 export default function RootLayout({
