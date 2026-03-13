@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Platinums - หวยหุ้น แพลทินัม</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&family=Bebas+Neue&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #080a0e;
+    --bg-secondary: #0e1117;
+    --bg-card: #131720;
+    --bg-card-hover: #1a1f2c;
+    --plat-primary: #a8b4c4;
+    --plat-light: #d0dae8;
+    --plat-dark: #6e7a8a;
+    --plat-glow: rgba(168, 180, 196, 0.25);
+    --plat-accent: #7eb8e0;
+    --text-primary: #e8ecf2;
+    --text-secondary: #7a8292;
+    --text-muted: #4a5060;
+    --accent-green: #2ecc71;
+    --accent-red: #e74c3c;
+    --border: rgba(168, 180, 196, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Prompt', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(ellipse at 30% 0%, rgba(126, 184, 224, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 100%, rgba(168, 180, 196, 0.04) 0%, transparent 50%),
+      repeating-linear-gradient(90deg, transparent, transparent 120px, rgba(168, 180, 196, 0.015) 120px, rgba(168, 180, 196, 0.015) 121px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+  /* ===== HEADER ===== */
+  header {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--plat-accent), transparent);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-icon {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--plat-dark), var(--plat-light));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    color: var(--bg-primary);
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 20px var(--plat-glow);
+    position: relative;
+    overflow: hidden;
+  }
+  .logo-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+  }
+
+  .logo-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--plat-light), var(--plat-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+  .logo-text span {
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  nav { display: flex; gap: 8px; }
+  nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+  nav a:hover, nav a.active {
+    color: var(--plat-accent);
+    background: rgba(126, 184, 224, 0.08);
+  }
+
+  .line-btn {
+    background: #06c755;
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: 8px !important;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .line-btn:hover { background: #05b34a !important; }
+
+  /* ===== HERO ===== */
+  .hero {
+    padding: 40px 0 30px;
+    text-align: center;
+  }
+
+  .next-round-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .next-round-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    color: var(--plat-light);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .countdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .countdown-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    min-width: 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .countdown-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--plat-dark), var(--plat-accent), var(--plat-dark));
+  }
+  .countdown-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--plat-light);
+    line-height: 1;
+  }
+  .countdown-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .live-pulse {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--accent-green);
+    font-weight: 600;
+    margin-top: 16px;
+    letter-spacing: 1px;
+  }
+  .live-dot {
+    width: 8px; height: 8px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ===== SECTION TITLES ===== */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 40px 0 20px;
+  }
+  .section-title h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 3px;
+    color: var(--plat-accent);
+    white-space: nowrap;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* ===== RESULTS GRID ===== */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .result-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--plat-accent), var(--plat-dark));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .result-card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(126, 184, 224, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .result-card:hover::before { opacity: 1; }
+
+  .result-flag {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  .result-info { flex: 1; }
+  .result-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .result-time {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .result-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--plat-light);
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px var(--plat-glow);
+  }
+
+  .result-status {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .status-closed {
+    background: rgba(231, 76, 60, 0.15);
+    color: var(--accent-red);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+  }
+  .status-open {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--accent-green);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+  }
+
+  .result-card.waiting {
+    border-style: dashed;
+    border-color: rgba(168, 180, 196, 0.1);
+  }
+  .result-card.waiting .result-number {
+    color: var(--text-muted);
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== COUNTDOWN STRIP ===== */
+  .countdown-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .strip-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .strip-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .strip-time {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--plat-accent);
+  }
+
+  /* ===== PAYOUT TABLE ===== */
+  .payout-section { margin: 40px 0; }
+
+  .payout-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--bg-card);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .payout-table thead th {
+    background: linear-gradient(135deg, rgba(126, 184, 224, 0.12), rgba(126, 184, 224, 0.04));
+    padding: 14px 20px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--plat-accent);
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .payout-table tbody td {
+    padding: 14px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+  }
+  .payout-table tbody tr:last-child td { border-bottom: none; }
+  .payout-table tbody tr:hover { background: rgba(126, 184, 224, 0.03); }
+  .payout-type { font-weight: 600; color: var(--text-primary); }
+  .payout-rate {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--plat-light);
+    font-weight: 700;
+  }
+  .payout-desc { color: var(--text-muted); font-size: 12px; }
+
+  /* ===== EXTRA: PLATINUM DIAMOND BADGE ===== */
+  .plat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, rgba(168, 180, 196, 0.1), rgba(126, 184, 224, 0.05));
+    border: 1px solid rgba(168, 180, 196, 0.2);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--plat-primary);
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    margin-top: 60px;
+    padding: 30px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  footer p {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* ===== LINE FLOAT ===== */
+  .line-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    background: #06c755;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(6, 199, 85, 0.4);
+    cursor: pointer;
+    z-index: 100;
+    transition: transform 0.3s;
+    text-decoration: none;
+  }
+  .line-float:hover { transform: scale(1.1); }
+  .line-float svg { width: 32px; height: 32px; fill: #fff; }
+
+  .theme-badge {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--plat-primary), var(--plat-accent));
+    color: var(--bg-primary);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 6px;
+    letter-spacing: 2px;
+    z-index: 200;
+    font-family: 'Bebas Neue', sans-serif;
+  }
+
+  @media (max-width: 768px) {
+    .header-inner { flex-direction: column; gap: 16px; }
+    nav { flex-wrap: wrap; justify-content: center; }
+    .next-round-name { font-size: 28px; }
+    .countdown-num { font-size: 28px; }
+    .results-grid { grid-template-columns: 1fr; }
+    .countdown-strip { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="theme-badge">PLATINUM THEME</div>
+
+<a class="line-float" href="#" title="LINE Official">
+  <svg viewBox="0 0 24 24"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+</a>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">PLT</div>
+        <div class="logo-text">
+          <h1>STOCK PLATINUMS</h1>
+          <span>หวยหุ้น แพลทินัม</span>
+        </div>
+      </div>
+      <nav>
+        <a href="#" class="active">หน้าแรก</a>
+        <a href="#">ผลหวย</a>
+        <a href="#">อัตราจ่าย</a>
+        <a href="#">เกี่ยวกับ</a>
+        <a href="#" class="line-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          LINE
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="next-round-label">รอบถัดไป</div>
+    <div class="next-round-name">
+      <span>🇺🇸</span> หุ้นดาวโจนส์ แพลทินัม
+    </div>
+    <div class="plat-badge">◆ PLATINUM SOURCE</div>
+    <div class="countdown-container">
+      <div class="countdown-box">
+        <div class="countdown-num">04</div>
+        <div class="countdown-label">ชั่วโมง</div>
+      </div>
+      <div class="countdown-box">
+        <div class="countdown-num">12</div>
+        <div class="countdown-label">นาที</div>
+      </div>
+      <div class="countdown-box">
+        <div class="countdown-num">45</div>
+        <div class="countdown-label">วินาที</div>
+      </div>
+    </div>
+    <div class="live-pulse">
+      <span class="live-dot"></span>
+      LIVE — กำลังเปิดรับ
+    </div>
+  </section>
+
+  <div class="section-title"><h2>⏳ รอบที่กำลังจะมา</h2></div>
+  <div class="countdown-strip">
+    <div class="strip-item">
+      <span class="strip-name">🇺🇸 ดาวโจนส์</span>
+      <span class="strip-time">04:12:45</span>
+    </div>
+    <div class="strip-item">
+      <span class="strip-name">🇩🇪 เยอรมัน</span>
+      <span class="strip-time">05:30:10</span>
+    </div>
+    <div class="strip-item">
+      <span class="strip-name">🇬🇧 อังกฤษ</span>
+      <span class="strip-time">06:15:22</span>
+    </div>
+    <div class="strip-item">
+      <span class="strip-name">🇷🇺 รัสเซีย</span>
+      <span class="strip-time">07:00:30</span>
+    </div>
+    <div class="strip-item">
+      <span class="strip-name">🇻🇳 เวียดนาม บ่าย</span>
+      <span class="strip-time">08:45:18</span>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>🏆 ผลหวยวันนี้ — 15/03/2026</h2></div>
+  <div class="results-grid">
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇯🇵</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นนิเคอิ แพลทินัม เช้า</div>
+        <div class="result-time">ปิดรับ: 14/03/2026 22:40</div>
+      </div>
+      <div class="result-number">361</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇨🇳</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นจีน แพลทินัม เช้า</div>
+        <div class="result-time">ปิดรับ: 14/03/2026 23:45</div>
+      </div>
+      <div class="result-number">578</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇭🇰</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นฮั่งเส็ง แพลทินัม เช้า</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 00:20</div>
+      </div>
+      <div class="result-number">204</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇻🇳</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นเวียดนาม แพลทินัม เช้า</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 01:15</div>
+      </div>
+      <div class="result-number">892</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇹🇼</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นไต้หวัน แพลทินัม</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 01:30</div>
+      </div>
+      <div class="result-number">467</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇰🇷</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นเกาหลี แพลทินัม</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 02:20</div>
+      </div>
+      <div class="result-number">135</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇯🇵</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นนิเคอิ แพลทินัม บ่าย</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 03:10</div>
+      </div>
+      <div class="result-number">749</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇨🇳</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นจีน แพลทินัม บ่าย</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 04:15</div>
+      </div>
+      <div class="result-number">023</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇭🇰</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นฮั่งเส็ง แพลทินัม บ่าย</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 05:10</div>
+      </div>
+      <div class="result-number">581</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇸🇬</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นสิงคโปร์ แพลทินัม</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 05:40</div>
+      </div>
+      <div class="result-number">694</div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-status status-closed">ปิดรับแล้ว</span>
+      <div class="result-flag">🇻🇳</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นเวียดนาม แพลทินัม บ่าย</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 06:20</div>
+      </div>
+      <div class="result-number">317</div>
+    </div>
+
+    <div class="result-card waiting">
+      <span class="result-status status-open">เปิดรับ</span>
+      <div class="result-flag">🇷🇺</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นรัสเซีย แพลทินัม</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 12:10</div>
+      </div>
+      <div class="result-number">รอผล...</div>
+    </div>
+
+    <div class="result-card waiting">
+      <span class="result-status status-open">เปิดรับ</span>
+      <div class="result-flag">🇬🇧</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นอังกฤษ แพลทินัม</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 13:00</div>
+      </div>
+      <div class="result-number">รอผล...</div>
+    </div>
+
+    <div class="result-card waiting">
+      <span class="result-status status-open">เปิดรับ</span>
+      <div class="result-flag">🇩🇪</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นเยอรมัน แพลทินัม</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 13:05</div>
+      </div>
+      <div class="result-number">รอผล...</div>
+    </div>
+
+    <div class="result-card waiting">
+      <span class="result-status status-open">เปิดรับ</span>
+      <div class="result-flag">🇺🇸</div>
+      <div class="result-info">
+        <div class="result-name">หุ้นดาวโจนส์ แพลทินัม</div>
+        <div class="result-time">ปิดรับ: 15/03/2026 13:15</div>
+      </div>
+      <div class="result-number">รอผล...</div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>💰 อัตราจ่าย</h2></div>
+  <section class="payout-section">
+    <table class="payout-table">
+      <thead>
+        <tr>
+          <th>ประเภท</th>
+          <th>อัตราจ่าย</th>
+          <th>รายละเอียด</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="payout-type">3 ตัวบน</td>
+          <td class="payout-rate">850</td>
+          <td class="payout-desc">ทายเลข 3 ตัวตรงตามลำดับ</td>
+        </tr>
+        <tr>
+          <td class="payout-type">3 ตัวโต๊ด</td>
+          <td class="payout-rate">120</td>
+          <td class="payout-desc">ทายเลข 3 ตัวไม่ต้องเรียงลำดับ</td>
+        </tr>
+        <tr>
+          <td class="payout-type">2 ตัวบน</td>
+          <td class="payout-rate">92</td>
+          <td class="payout-desc">ทายเลข 2 ตัวท้าย (บน)</td>
+        </tr>
+        <tr>
+          <td class="payout-type">2 ตัวล่าง</td>
+          <td class="payout-rate">92</td>
+          <td class="payout-desc">ทายเลข 2 ตัวท้าย (ล่าง)</td>
+        </tr>
+        <tr>
+          <td class="payout-type">วิ่งบน</td>
+          <td class="payout-rate">3.2</td>
+          <td class="payout-desc">ทายเลขวิ่ง 1 ตัว (บน)</td>
+        </tr>
+        <tr>
+          <td class="payout-type">วิ่งล่าง</td>
+          <td class="payout-rate">4.2</td>
+          <td class="payout-desc">ทายเลขวิ่ง 1 ตัว (ล่าง)</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2026 STOCK PLATINUMS — หวยหุ้น แพลทินัม &nbsp;|&nbsp; stockplatinums.com</p>
+  </div>
+</footer>
+
+</body>
+</html>
