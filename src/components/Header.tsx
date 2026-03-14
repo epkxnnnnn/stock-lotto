@@ -43,6 +43,9 @@ export default function Header() {
             <Link href="/rates" className="text-[var(--text-secondary)] text-sm font-medium px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
               อัตราจ่าย
             </Link>
+            <Link href="/agent" className="text-[var(--text-secondary)] text-sm font-medium px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
+              สมัครตัวแทน
+            </Link>
             <Link href="/about" className="text-[var(--text-secondary)] text-sm font-medium px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
               เกี่ยวกับ
             </Link>

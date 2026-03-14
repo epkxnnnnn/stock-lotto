@@ -97,6 +97,102 @@ export interface Database {
         };
         Relationships: [];
       };
+      agent_applications: {
+        Row: {
+          id: string;
+          full_name: string;
+          phone: string;
+          line_id: string;
+          experience: string | null;
+          referral_source: string | null;
+          source: string;
+          status: string;
+          admin_note: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          full_name: string;
+          phone: string;
+          line_id: string;
+          experience?: string | null;
+          referral_source?: string | null;
+          source?: string;
+          status?: string;
+          admin_note?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          full_name?: string;
+          phone?: string;
+          line_id?: string;
+          experience?: string | null;
+          referral_source?: string | null;
+          source?: string;
+          status?: string;
+          admin_note?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      api_access_requests: {
+        Row: {
+          id: string;
+          contact_name: string;
+          contact_phone: string;
+          line_id: string;
+          system_name: string;
+          system_url: string | null;
+          use_case: string;
+          expected_volume: string | null;
+          requested_sources: string[];
+          webhook_url: string | null;
+          source: string;
+          status: string;
+          admin_note: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          contact_name: string;
+          contact_phone: string;
+          line_id: string;
+          system_name: string;
+          system_url?: string | null;
+          use_case: string;
+          expected_volume?: string | null;
+          requested_sources?: string[];
+          webhook_url?: string | null;
+          source?: string;
+          status?: string;
+          admin_note?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          contact_name?: string;
+          contact_phone?: string;
+          line_id?: string;
+          system_name?: string;
+          system_url?: string | null;
+          use_case?: string;
+          expected_volume?: string | null;
+          requested_sources?: string[];
+          webhook_url?: string | null;
+          source?: string;
+          status?: string;
+          admin_note?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       api_usage_logs: {
         Row: {
           id: number;
