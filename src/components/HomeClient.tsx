@@ -10,8 +10,10 @@ import SectionTitle from './SectionTitle';
 
 interface HomeClientProps {
   initialResults: StockResult[];
+  initialYesterdayResults: StockResult[];
   brand: string;
   today: string;
+  yesterday: string;
 }
 
 function mapRow(r: Record<string, unknown>): StockResult {
@@ -33,8 +35,9 @@ function mapRow(r: Record<string, unknown>): StockResult {
   };
 }
 
-export default function HomeClient({ initialResults, brand, today }: HomeClientProps) {
+export default function HomeClient({ initialResults, initialYesterdayResults, brand, today, yesterday }: HomeClientProps) {
   const [results, setResults] = useState<StockResult[]>(initialResults);
+  const [yesterdayResults] = useState<StockResult[]>(initialYesterdayResults);
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Refetch all results from Supabase (called when countdown expires)
@@ -109,11 +112,18 @@ export default function HomeClient({ initialResults, brand, today }: HomeClientP
   const nextRound = openRounds.find((r) => new Date(r.closeTime) > now);
   const upcomingRounds = openRounds.filter((r) => r !== nextRound);
 
-  const todayFormatted = new Date().toLocaleDateString('th-TH', {
+  const hasAnyResult = results.some((r) => r.winningNumber);
+  const showYesterday = !hasAnyResult && yesterdayResults.length > 0;
+
+  const displayDate = showYesterday ? yesterday : today;
+  const displayFormatted = new Date(displayDate + 'T00:00:00').toLocaleDateString('th-TH', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   });
+
+  const displayResults = showYesterday ? yesterdayResults : results;
+  const sectionLabel = showYesterday ? 'ผลหวยล่าสุด (เมื่อวาน)' : 'ผลหวยวันนี้';
 
   return (
     <>
@@ -126,8 +136,8 @@ export default function HomeClient({ initialResults, brand, today }: HomeClientP
         </>
       )}
 
-      <SectionTitle>&#x1F3C6; ผลหวยวันนี้ &mdash; {todayFormatted}</SectionTitle>
-      <ResultsGrid results={results} />
+      <SectionTitle>&#x1F3C6; {sectionLabel} &mdash; {displayFormatted}</SectionTitle>
+      <ResultsGrid results={displayResults} />
     </>
   );
 }

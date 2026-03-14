@@ -18,41 +18,8 @@ export const metadata: Metadata = {
   },
 };
 
-async function getResults(brand: string, today: string): Promise<StockResult[]> {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
-  );
-
-  const { data } = await supabase
-    .from('stock_results')
-    .select('*')
-    .eq('source', brand)
-    .eq('round_date', today)
-    .order('close_time', { ascending: true });
-
-  if (!data || data.length === 0) {
-    // Fallback to market config if no DB rows yet
-    const markets = getMarkets(brand as 'vvip' | 'platinum');
-    return markets.map((m) => ({
-      id: `${brand}-${m.code}-${today}`,
-      source: brand as 'vvip' | 'platinum',
-      market: m.code,
-      marketLabelTh: m.labelTh,
-      flagEmoji: m.flagEmoji,
-      winningNumber: null,
-      winningNumber2d: null,
-      roundDate: today,
-      closeTime: `${today}T${m.closeTime}:00+07:00`,
-      resultTime: null,
-      status: 'open' as const,
-      generationMethod: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
-  }
-
-  return data.map((r: Record<string, unknown>) => ({
+function mapRow(r: Record<string, unknown>): StockResult {
+  return {
     id: r.id as string,
     source: r.source as 'vvip' | 'platinum',
     market: r.market as string,
@@ -68,15 +35,71 @@ async function getResults(brand: string, today: string): Promise<StockResult[]> 
     generationMethod: (r.generation_method as 'auto' | 'manual' | null) ?? null,
     createdAt: r.created_at as string,
     updatedAt: r.updated_at as string,
-  }));
+  };
+}
+
+async function getResults(brand: string, date: string): Promise<StockResult[]> {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_KEY!
+  );
+
+  const { data } = await supabase
+    .from('stock_results')
+    .select('*')
+    .eq('source', brand)
+    .eq('round_date', date)
+    .order('close_time', { ascending: true });
+
+  if (!data || data.length === 0) {
+    // Fallback to market config if no DB rows yet
+    const markets = getMarkets(brand as 'vvip' | 'platinum');
+    return markets.map((m) => ({
+      id: `${brand}-${m.code}-${date}`,
+      source: brand as 'vvip' | 'platinum',
+      market: m.code,
+      marketLabelTh: m.labelTh,
+      flagEmoji: m.flagEmoji,
+      winningNumber: null,
+      winningNumber2d: null,
+      roundDate: date,
+      closeTime: `${date}T${m.closeTime}:00+07:00`,
+      resultTime: null,
+      status: 'open' as const,
+      generationMethod: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }));
+  }
+
+  return data.map(mapRow);
 }
 
 export const dynamic = 'force-dynamic';
+
+function getYesterday(today: string): string {
+  const d = new Date(today + 'T12:00:00');
+  d.setDate(d.getDate() - 1);
+  return d.toLocaleDateString('en-CA');
+}
 
 export default async function HomePage() {
   const config = getBrandConfig();
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
   const results = await getResults(config.brand, today);
 
-  return <HomeClient initialResults={results} brand={config.brand} today={today} />;
+  // If no results today, fetch yesterday's for the results grid
+  const hasAnyResult = results.some((r) => r.winningNumber);
+  const yesterday = getYesterday(today);
+  const yesterdayResults = hasAnyResult ? [] : await getResults(config.brand, yesterday);
+
+  return (
+    <HomeClient
+      initialResults={results}
+      initialYesterdayResults={yesterdayResults}
+      brand={config.brand}
+      today={today}
+      yesterday={yesterday}
+    />
+  );
 }
