@@ -30,12 +30,12 @@ function mapRow(r: Record<string, unknown>): StockResult {
 export default function ResultsClient() {
   const config = getBrandConfig();
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split('T')[0]
+    new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' })
   );
   const [results, setResults] = useState<StockResult[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
   const isToday = selectedDate === todayStr;
 
   const fetchResults = useCallback(async () => {

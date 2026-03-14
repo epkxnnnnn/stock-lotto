@@ -75,7 +75,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const config = getBrandConfig();
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
   const results = await getResults(config.brand, today);
 
   return <HomeClient initialResults={results} brand={config.brand} today={today} />;

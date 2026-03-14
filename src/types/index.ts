@@ -7,8 +7,13 @@ export interface Market {
   labelTh: string;
   labelLo?: string;
   flagEmoji: string;
-  closeTime: string; // HH:mm format in UTC+7
+  openTime: string;      // HH:mm UTC+7 (from Khong plan_detail.open)
+  closeTime: string;     // HH:mm UTC+7 (from Khong plan_detail.close)
+  announceTime: string;  // HH:mm UTC+7 (from Khong plan_detail.announ)
   order: number;
+  khongTemplateId: number;  // Khong lottery_templates.id
+  khongSlug: string;        // Khong lottery_templates.slug
+  resultSourceUrl?: string; // URL for auto-fetching results
 }
 
 export type GenerationMethod = 'auto' | 'manual';
