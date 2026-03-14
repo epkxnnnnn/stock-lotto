@@ -13,7 +13,7 @@ export default function ResultCard({ result }: ResultCardProps) {
 
   return (
     <div
-      className={`bg-[var(--bg-card)] border rounded-[14px] px-5 py-[18px] min-h-[82px] flex items-center gap-3.5 transition-all relative overflow-hidden group hover:bg-[var(--bg-card-hover)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] ${
+      className={`bg-[var(--bg-card)] border rounded-[14px] px-3.5 py-3 md:px-5 md:py-[18px] min-h-[68px] md:min-h-[82px] flex items-center gap-2.5 md:gap-3.5 transition-all relative overflow-hidden group hover:bg-[var(--bg-card-hover)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] ${
         isWaiting
           ? 'border-dashed border-[var(--brand-primary)]/10'
           : 'border-[var(--border)] hover:border-[var(--brand-primary)]/30'
@@ -27,30 +27,29 @@ export default function ResultCard({ result }: ResultCardProps) {
       />
       <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[var(--brand-accent)] to-[var(--brand-dark)] opacity-0 transition-opacity group-hover:opacity-100" />
 
-      <span className="absolute top-2.5 right-3 text-[10px] px-2 py-0.5 rounded font-semibold tracking-wider">
-        {isWaiting ? (
-          <span className="bg-[rgba(46,204,113,0.15)] text-[var(--accent-green)] border border-[rgba(46,204,113,0.3)] px-2 py-0.5 rounded">
-            เปิดรับ
-          </span>
-        ) : (
-          <span className="bg-[rgba(231,76,60,0.15)] text-[var(--accent-red)] border border-[rgba(231,76,60,0.3)] px-2 py-0.5 rounded">
-            ปิดรับแล้ว
-          </span>
-        )}
-      </span>
-
-      <FlagIcon emoji={result.flagEmoji} size={44} />
+      <FlagIcon emoji={result.flagEmoji} size={36} />
 
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-semibold text-[var(--text-primary)] truncate">
-          {result.marketLabelTh}
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-[var(--text-primary)] truncate">
+            {result.marketLabelTh}
+          </span>
+          {isWaiting ? (
+            <span className="shrink-0 bg-[rgba(46,204,113,0.15)] text-[var(--accent-green)] border border-[rgba(46,204,113,0.3)] text-[10px] px-1.5 py-0.5 rounded font-semibold">
+              เปิดรับ
+            </span>
+          ) : (
+            <span className="shrink-0 bg-[rgba(231,76,60,0.15)] text-[var(--accent-red)] border border-[rgba(231,76,60,0.3)] text-[10px] px-1.5 py-0.5 rounded font-semibold">
+              ปิดรับแล้ว
+            </span>
+          )}
         </div>
         <div className="text-[11px] text-[var(--text-muted)]">
           ปิดรับ: {formattedClose}
         </div>
       </div>
 
-      <div className="shrink-0 w-[110px] flex justify-end">
+      <div className="shrink-0 w-[90px] md:w-[110px] flex justify-end">
         {isWaiting ? (
           <span className="text-[var(--text-muted)] text-sm tracking-wider font-thai">
             รอผล...

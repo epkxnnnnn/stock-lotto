@@ -53,7 +53,7 @@ export default function AboutPage() {
       <SectionTitle>&#x2139;&#xFE0F; เกี่ยวกับ {config.siteName}</SectionTitle>
 
       {/* Hero about section */}
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-8 mb-6 relative overflow-hidden">
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-5 md:p-8 mb-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--brand-primary)]/5 to-transparent pointer-events-none" />
         <div className="relative">
           <h3 className="font-heading text-2xl tracking-[3px] gradient-text mb-4">
@@ -121,7 +121,7 @@ export default function AboutPage() {
         <h3 className="font-heading text-xl tracking-[2px] text-[var(--brand-primary)] mb-4">
           &#x1F30D; ตลาดหุ้นทั้งหมด ({markets.length} รอบ)
         </h3>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3">
+        <div className="grid max-sm:grid-cols-1 grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3">
           {markets.map((market, i) => (
             <div
               key={market.code}

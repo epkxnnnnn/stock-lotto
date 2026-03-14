@@ -57,7 +57,7 @@ export default function AdminResultEntry({
           }}
           placeholder="000"
           maxLength={3}
-          className="w-[72px] bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-3 py-2 text-center font-mono text-lg text-[var(--brand-light)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors"
+          className="w-16 md:w-[72px] bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-3 py-2 text-center font-mono text-lg text-[var(--brand-light)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors"
           disabled={status === 'saving' || status === 'saved'}
           title="3 ตัวบน"
         />
@@ -70,7 +70,7 @@ export default function AdminResultEntry({
           }}
           placeholder="00"
           maxLength={2}
-          className="w-[56px] bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-3 py-2 text-center font-mono text-lg text-[var(--brand-light)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors"
+          className="w-14 md:w-[56px] bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-3 py-2 text-center font-mono text-lg text-[var(--brand-light)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors"
           disabled={status === 'saving' || status === 'saved'}
           title="2 ตัวล่าง"
         />

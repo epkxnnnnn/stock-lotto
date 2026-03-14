@@ -133,7 +133,7 @@ export default function ResultsClient() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSelectedDate(shiftDate(selectedDate, -1))}
-              className="w-9 h-9 flex items-center justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)]/30 transition-all text-sm"
+              className="w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)]/30 transition-all text-sm"
               title="วันก่อนหน้า"
             >
               &#x25C0;
@@ -148,7 +148,7 @@ export default function ResultsClient() {
             <button
               onClick={() => canGoForward && setSelectedDate(shiftDate(selectedDate, 1))}
               disabled={!canGoForward}
-              className="w-9 h-9 flex items-center justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)]/30 transition-all text-sm disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-[var(--text-secondary)] disabled:hover:border-[var(--border)]"
+              className="w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)]/30 transition-all text-sm disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-[var(--text-secondary)] disabled:hover:border-[var(--border)]"
               title="วันถัดไป"
             >
               &#x25B6;

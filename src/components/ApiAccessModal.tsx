@@ -184,7 +184,7 @@ export default function ApiAccessModal({ open, onClose }: ApiAccessModalProps) {
                 </div>
 
                 {/* Phone + LINE ID row */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
                       เบอร์โทร <span className="text-red-400">*</span>

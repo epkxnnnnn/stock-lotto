@@ -95,7 +95,7 @@ export default function AgentPage() {
       <SectionTitle>{'\u{1F91D}'} สมัครตัวแทน {config.siteName}</SectionTitle>
 
       {/* Hero */}
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-8 mb-6 relative overflow-hidden">
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-5 md:p-8 mb-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--brand-primary)]/5 to-transparent pointer-events-none" />
         <div className="relative">
           <h3 className="font-heading text-2xl tracking-[3px] gradient-text mb-4">
