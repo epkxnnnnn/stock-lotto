@@ -1,5 +1,6 @@
 import type { StockResult } from '@/types';
 import NumberRenderer from './NumberRenderer';
+import FlagIcon from './FlagIcon';
 
 interface ResultCardProps {
   result: StockResult;
@@ -12,7 +13,7 @@ export default function ResultCard({ result }: ResultCardProps) {
 
   return (
     <div
-      className={`bg-[var(--bg-card)] border rounded-[14px] px-5 py-[18px] flex items-center gap-3.5 transition-all relative overflow-hidden group hover:bg-[var(--bg-card-hover)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] ${
+      className={`bg-[var(--bg-card)] border rounded-[14px] px-5 py-[18px] min-h-[82px] flex items-center gap-3.5 transition-all relative overflow-hidden group hover:bg-[var(--bg-card-hover)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] ${
         isWaiting
           ? 'border-dashed border-[var(--brand-primary)]/10'
           : 'border-[var(--border)] hover:border-[var(--brand-primary)]/30'
@@ -38,9 +39,7 @@ export default function ResultCard({ result }: ResultCardProps) {
         )}
       </span>
 
-      <div className="w-11 h-11 rounded-[10px] bg-[var(--bg-secondary)] flex items-center justify-center text-[26px] shrink-0">
-        {result.flagEmoji}
-      </div>
+      <FlagIcon emoji={result.flagEmoji} size={44} />
 
       <div className="flex-1 min-w-0">
         <div className="text-sm font-semibold text-[var(--text-primary)] truncate">
@@ -51,24 +50,26 @@ export default function ResultCard({ result }: ResultCardProps) {
         </div>
       </div>
 
-      {isWaiting ? (
-        <span className="text-[var(--text-muted)] text-sm tracking-wider font-thai">
-          รอผล...
-        </span>
-      ) : (
-        <div className="flex flex-col items-end gap-1">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[9px] text-[var(--text-muted)] font-thai">3 ตัวบน</span>
-            <NumberRenderer number={result.winningNumber!} size="md" />
-          </div>
-          {result.winningNumber2d && (
+      <div className="shrink-0 w-[110px] flex justify-end">
+        {isWaiting ? (
+          <span className="text-[var(--text-muted)] text-sm tracking-wider font-thai">
+            รอผล...
+          </span>
+        ) : (
+          <div className="flex flex-col items-end gap-1">
             <div className="flex items-center gap-1.5">
-              <span className="text-[9px] text-[var(--text-muted)] font-thai">2 ตัวล่าง</span>
-              <NumberRenderer number={result.winningNumber2d} size="sm" />
+              <span className="text-[9px] text-[var(--text-muted)] font-thai">3 ตัวบน</span>
+              <NumberRenderer number={result.winningNumber!} size="md" />
             </div>
-          )}
-        </div>
-      )}
+            {result.winningNumber2d && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9px] text-[var(--text-muted)] font-thai">2 ตัวล่าง</span>
+                <NumberRenderer number={result.winningNumber2d} size="sm" />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

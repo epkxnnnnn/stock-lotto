@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getBrandConfig } from '@/lib/theme/config';
 import { getMarkets } from '@/lib/theme/rounds';
 import SectionTitle from '@/components/SectionTitle';
+import FlagIcon from '@/components/FlagIcon';
 
 const aboutConfig = getBrandConfig();
 const aboutRoundCount = aboutConfig.brand === 'platinum' ? 15 : 13;
@@ -130,7 +131,7 @@ export default function AboutPage() {
                 animationDelay: `${i * 0.03}s`,
               }}
             >
-              <span className="text-xl">{market.flagEmoji}</span>
+              <FlagIcon emoji={market.flagEmoji} size={32} />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-[var(--text-primary)] truncate">
                   {market.labelTh}

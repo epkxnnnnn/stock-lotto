@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<rect width="100" height="100" fill="#DE2110"/>
+<g transform="translate(50,50)" fill="#fff">
+  <!-- 5 bauhinia petals -->
+  <ellipse rx="7" ry="18" transform="rotate(0) translate(0,-11)"/>
+  <ellipse rx="7" ry="18" transform="rotate(72) translate(0,-11)"/>
+  <ellipse rx="7" ry="18" transform="rotate(144) translate(0,-11)"/>
+  <ellipse rx="7" ry="18" transform="rotate(216) translate(0,-11)"/>
+  <ellipse rx="7" ry="18" transform="rotate(288) translate(0,-11)"/>
+  <!-- Red vein lines -->
+  <line x1="0" y1="0" x2="0" y2="-24" stroke="#DE2110" stroke-width="1.2" transform="rotate(0)"/>
+  <line x1="0" y1="0" x2="0" y2="-24" stroke="#DE2110" stroke-width="1.2" transform="rotate(72)"/>
+  <line x1="0" y1="0" x2="0" y2="-24" stroke="#DE2110" stroke-width="1.2" transform="rotate(144)"/>
+  <line x1="0" y1="0" x2="0" y2="-24" stroke="#DE2110" stroke-width="1.2" transform="rotate(216)"/>
+  <line x1="0" y1="0" x2="0" y2="-24" stroke="#DE2110" stroke-width="1.2" transform="rotate(288)"/>
+  <circle r="3.5" fill="#fff"/>
+  <!-- Small red dots on petals -->
+  <circle cx="0" cy="-17" r="1.5" fill="#DE2110"/>
+  <circle cx="16.2" cy="-5.3" r="1.5" fill="#DE2110"/>
+  <circle cx="10" cy="13.8" r="1.5" fill="#DE2110"/>
+  <circle cx="-10" cy="13.8" r="1.5" fill="#DE2110"/>
+  <circle cx="-16.2" cy="-5.3" r="1.5" fill="#DE2110"/>
+</g>
+</svg>

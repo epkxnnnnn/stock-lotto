@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<rect width="100" height="100" fill="#012169"/>
+<!-- White diagonals -->
+<polygon points="0,0 40,40 0,0 100,0 60,40 100,0 100,100 60,60 100,100 0,100 40,60 0,100" fill="none"/>
+<line x1="0" y1="0" x2="100" y2="100" stroke="#fff" stroke-width="14"/>
+<line x1="100" y1="0" x2="0" y2="100" stroke="#fff" stroke-width="14"/>
+<!-- Red diagonals (counterchanged) -->
+<line x1="0" y1="0" x2="50" y2="50" stroke="#C8102E" stroke-width="5" transform="translate(1,0)"/>
+<line x1="50" y1="50" x2="100" y2="100" stroke="#C8102E" stroke-width="5" transform="translate(-1,0)"/>
+<line x1="100" y1="0" x2="50" y2="50" stroke="#C8102E" stroke-width="5" transform="translate(-1,0)"/>
+<line x1="50" y1="50" x2="0" y2="100" stroke="#C8102E" stroke-width="5" transform="translate(1,0)"/>
+<!-- White cross -->
+<rect x="38" width="24" height="100" fill="#fff"/>
+<rect y="38" width="100" height="24" fill="#fff"/>
+<!-- Red cross -->
+<rect x="42" width="16" height="100" fill="#C8102E"/>
+<rect y="42" width="100" height="16" fill="#C8102E"/>
+</svg>

@@ -55,7 +55,7 @@ export default function CountdownTimer({ targetTime, onExpire }: CountdownTimerP
           className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-5 py-4 min-w-[80px] text-center relative overflow-hidden"
         >
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--brand-dark)] via-[var(--brand-accent)] to-[var(--brand-dark)]" />
-          <div className="font-mono text-4xl font-bold text-[var(--brand-light)] leading-none max-md:text-[28px]">
+          <div className="font-mono text-4xl font-bold text-[var(--brand-light)] leading-none max-md:text-[28px] tabular-nums">
             {pad(item.value)}
           </div>
           <div className="text-[11px] text-[var(--text-muted)] mt-1.5 tracking-[2px] uppercase">

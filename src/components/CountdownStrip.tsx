@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { StockResult } from '@/types';
+import FlagIcon from './FlagIcon';
 
 interface CountdownStripProps {
   rounds: StockResult[];
@@ -34,10 +35,11 @@ export default function CountdownStrip({ rounds }: CountdownStripProps) {
           key={round.id}
           className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[10px] px-4 py-3 flex justify-between items-center"
         >
-          <span className="text-[13px] font-medium text-[var(--text-secondary)]">
-            {round.flagEmoji} {round.marketLabelTh.replace(/VVIP|แพลทินัม|หุ้น/g, '').trim()}
+          <span className="text-[13px] font-medium text-[var(--text-secondary)] flex items-center gap-2 min-w-0 truncate">
+            <FlagIcon emoji={round.flagEmoji} size={22} />
+            <span className="truncate">{round.marketLabelTh.replace(/VVIP|แพลทินัม|หุ้น/g, '').trim()}</span>
           </span>
-          <span className="font-mono text-sm font-semibold text-[var(--brand-accent)]">
+          <span className="font-mono text-sm font-semibold text-[var(--brand-accent)] tabular-nums w-[72px] text-right shrink-0">
             {formatTimeLeft(round.closeTime)}
           </span>
         </div>

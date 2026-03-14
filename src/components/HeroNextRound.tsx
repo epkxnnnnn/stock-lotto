@@ -1,6 +1,7 @@
 import type { StockResult } from '@/types';
 import { getBrandConfig } from '@/lib/theme/config';
 import CountdownTimer from './CountdownTimer';
+import FlagIcon from './FlagIcon';
 
 interface HeroNextRoundProps {
   nextRound: StockResult | undefined;
@@ -25,7 +26,7 @@ export default function HeroNextRound({ nextRound, onCountdownExpire }: HeroNext
           รอบถัดไป
         </div>
         <div className="font-heading text-4xl tracking-[2px] text-[var(--brand-light)] mb-2 flex items-center justify-center gap-3 max-md:text-[28px]">
-          <span className="text-[32px]">{nextRound.flagEmoji}</span> {nextRound.marketLabelTh}
+          <FlagIcon emoji={nextRound.flagEmoji} size={40} /> {nextRound.marketLabelTh}
         </div>
         <CountdownTimer targetTime={nextRound.closeTime} onExpire={onCountdownExpire} />
         <div className="inline-flex items-center gap-2 bg-[rgba(46,204,113,0.1)] border border-[rgba(46,204,113,0.3)] px-4 py-1.5 rounded-full text-xs text-[var(--accent-green)] font-semibold mt-4 tracking-wider">

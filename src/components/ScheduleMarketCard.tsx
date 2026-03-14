@@ -1,6 +1,7 @@
 'use client';
 
 import NumberRenderer from './NumberRenderer';
+import FlagIcon from './FlagIcon';
 
 export type DisplayStatus = 'upcoming' | 'open' | 'closed' | 'resulted';
 
@@ -87,9 +88,7 @@ export default function ScheduleMarketCard({ market, index }: ScheduleMarketCard
         <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
           {/* Left: Flag + Name + Badge */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-10 h-10 md:w-11 md:h-11 rounded-[10px] bg-[var(--bg-secondary)] flex items-center justify-center text-2xl shrink-0">
-              {market.flagEmoji}
-            </div>
+            <FlagIcon emoji={market.flagEmoji} size={44} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-semibold text-[var(--text-primary)] truncate">

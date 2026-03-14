@@ -6,7 +6,6 @@ import type { StockResult } from '@/types';
 import HeroNextRound from './HeroNextRound';
 import CountdownStrip from './CountdownStrip';
 import ResultsGrid from './ResultsGrid';
-import PayoutTable from './PayoutTable';
 import SectionTitle from './SectionTitle';
 
 interface HomeClientProps {
@@ -129,9 +128,6 @@ export default function HomeClient({ initialResults, brand, today }: HomeClientP
 
       <SectionTitle>&#x1F3C6; ผลหวยวันนี้ &mdash; {todayFormatted}</SectionTitle>
       <ResultsGrid results={results} />
-
-      <SectionTitle>&#x1F4B0; อัตราจ่าย</SectionTitle>
-      <PayoutTable />
     </>
   );
 }
