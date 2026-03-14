@@ -44,7 +44,7 @@ export default function CountdownTimer({ targetTime, onExpire }: CountdownTimerP
   }, [targetTime, onExpire]);
 
   return (
-    <div className="flex justify-center gap-3 mt-5">
+    <div className="flex justify-center gap-2 md:gap-3 mt-5">
       {[
         { value: time.hours, label: 'ชั่วโมง' },
         { value: time.minutes, label: 'นาที' },
@@ -52,13 +52,13 @@ export default function CountdownTimer({ targetTime, onExpire }: CountdownTimerP
       ].map((item) => (
         <div
           key={item.label}
-          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-5 py-4 min-w-[80px] text-center relative overflow-hidden"
+          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl min-w-[60px] px-3 py-3 md:min-w-[80px] md:px-5 md:py-4 text-center relative overflow-hidden"
         >
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--brand-dark)] via-[var(--brand-accent)] to-[var(--brand-dark)]" />
-          <div className="font-mono text-4xl font-bold text-[var(--brand-light)] leading-none max-md:text-[28px] tabular-nums">
+          <div className="font-mono text-2xl md:text-4xl font-bold text-[var(--brand-light)] leading-none tabular-nums">
             {pad(item.value)}
           </div>
-          <div className="text-[11px] text-[var(--text-muted)] mt-1.5 tracking-[2px] uppercase">
+          <div className="text-[10px] md:text-[11px] text-[var(--text-muted)] mt-1.5 tracking-[2px] uppercase">
             {item.label}
           </div>
         </div>

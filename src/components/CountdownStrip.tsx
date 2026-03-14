@@ -29,11 +29,11 @@ export default function CountdownStrip({ rounds }: CountdownStripProps) {
   if (rounds.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5 mb-7.5 max-md:grid-cols-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-2.5 mb-7.5">
       {rounds.map((round) => (
         <div
           key={round.id}
-          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[10px] px-4 py-3 flex justify-between items-center"
+          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[10px] px-3 py-2.5 md:px-4 md:py-3 flex justify-between items-center"
         >
           <span className="text-[13px] font-medium text-[var(--text-secondary)] flex items-center gap-2 min-w-0 truncate">
             <FlagIcon emoji={round.flagEmoji} size={22} />

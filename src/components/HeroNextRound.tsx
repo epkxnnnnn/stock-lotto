@@ -14,7 +14,7 @@ export default function HeroNextRound({ nextRound, onCountdownExpire }: HeroNext
   if (!nextRound) return null;
 
   return (
-    <section className="py-10 pb-7.5 text-center relative overflow-hidden">
+    <section className="py-6 pb-5 md:py-10 md:pb-7.5 text-center relative overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none"
         style={{
@@ -25,8 +25,8 @@ export default function HeroNextRound({ nextRound, onCountdownExpire }: HeroNext
         <div className="text-xs text-[var(--text-secondary)] tracking-[5px] uppercase mb-3">
           รอบถัดไป
         </div>
-        <div className="font-heading text-4xl tracking-[2px] text-[var(--brand-light)] mb-2 flex items-center justify-center gap-3 max-md:text-[28px]">
-          <FlagIcon emoji={nextRound.flagEmoji} size={40} /> {nextRound.marketLabelTh}
+        <div className="font-heading text-2xl md:text-4xl tracking-[2px] text-[var(--brand-light)] mb-2 flex items-center justify-center gap-3">
+          <FlagIcon emoji={nextRound.flagEmoji} size={28} /> {nextRound.marketLabelTh}
         </div>
         <CountdownTimer targetTime={nextRound.closeTime} onExpire={onCountdownExpire} />
         <div className="inline-flex items-center gap-2 bg-[rgba(46,204,113,0.1)] border border-[rgba(46,204,113,0.3)] px-4 py-1.5 rounded-full text-xs text-[var(--accent-green)] font-semibold mt-4 tracking-wider">
