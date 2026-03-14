@@ -37,6 +37,9 @@ export default function Header() {
             <Link href="/results" className="text-[var(--text-secondary)] text-sm font-medium px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
               ผลหวย
             </Link>
+            <Link href="/schedule" className="text-[var(--text-secondary)] text-sm font-medium px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
+              ตารางเวลา
+            </Link>
             <Link href="/rates" className="text-[var(--text-secondary)] text-sm font-medium px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
               อัตราจ่าย
             </Link>

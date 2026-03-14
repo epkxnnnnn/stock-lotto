@@ -46,6 +46,12 @@ body::before {
   100% { transform: translateX(100%) rotate(45deg); }
 }
 
+/* Fade in up animation for staggered card entry */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Container utility */
 .container-main {
   max-width: 1200px;
