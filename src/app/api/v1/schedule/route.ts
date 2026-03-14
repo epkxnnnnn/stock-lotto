@@ -16,7 +16,9 @@ export const GET = withApiAuth(async (request: NextRequest, context) => {
         market: market.code,
         marketLabelTh: market.labelTh,
         flagEmoji: market.flagEmoji,
+        openTime: `${today}T${market.openTime}:00+07:00`,
         closeTime: `${today}T${market.closeTime}:00+07:00`,
+        announceTime: `${today}T${market.announceTime}:00+07:00`,
         order: market.order,
       });
     }
@@ -29,7 +31,9 @@ export const GET = withApiAuth(async (request: NextRequest, context) => {
         market: market.code,
         marketLabelTh: market.labelTh,
         flagEmoji: market.flagEmoji,
+        openTime: `${today}T${market.openTime}:00+07:00`,
         closeTime: `${today}T${market.closeTime}:00+07:00`,
+        announceTime: `${today}T${market.announceTime}:00+07:00`,
         order: market.order,
       });
     }

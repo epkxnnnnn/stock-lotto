@@ -62,7 +62,7 @@ export default function AboutPage() {
                   {market.labelTh}
                 </div>
                 <div className="text-[11px] text-[var(--text-muted)]">
-                  ปิดรับ: {market.closeTime} น.
+                  ปิดรับ: {market.closeTime} น. · ออกผล: {market.announceTime} น.
                 </div>
               </div>
               <span className="text-xs text-[var(--text-muted)] font-mono">
@@ -81,12 +81,6 @@ export default function AboutPage() {
         <div className="text-sm text-[var(--text-secondary)] space-y-2">
           <p>
             &#x1F310; เว็บไซต์: {config.domain}
-          </p>
-          <p>
-            ติดตามข่าวสารและผลหวยผ่านทาง LINE Official Account ได้ที่หน้า{' '}
-            <a href="/line" className="text-[var(--brand-primary)] hover:text-[var(--brand-light)] transition-colors">
-              LINE
-            </a>
           </p>
         </div>
       </div>

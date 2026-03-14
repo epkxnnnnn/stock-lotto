@@ -4,7 +4,6 @@ import { getBrandConfig } from '@/lib/theme/config';
 import { getThemeCSSString } from '@/lib/theme/colors';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import LineFloatButton from '@/components/LineFloatButton';
 import './globals.css';
 
 const prompt = Prompt({
@@ -115,7 +114,6 @@ export default function RootLayout({
         <Header />
         <main className="container-main">{children}</main>
         <Footer />
-        <LineFloatButton />
       </body>
     </html>
   );

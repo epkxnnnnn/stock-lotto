@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { dispatchWebhooks } from '@/lib/api/webhook';
-import { broadcastMessage, buildResultNotification } from '@/lib/line/notify';
-import { getBrandConfig } from '@/lib/theme/config';
 
 export async function POST(request: NextRequest) {
   // Verify internal secret
@@ -18,8 +16,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const config = getBrandConfig();
-
   // Dispatch agent webhooks
   await dispatchWebhooks({
     event: 'result.published',
@@ -32,16 +28,6 @@ export async function POST(request: NextRequest) {
     round_date,
     timestamp: new Date().toISOString(),
   });
-
-  // Send LINE notification
-  const lineMessage = buildResultNotification(
-    market_label_th,
-    flag_emoji,
-    winning_number,
-    config.siteNameTh,
-    winning_number_2d ?? null
-  );
-  await broadcastMessage([lineMessage]);
 
   return NextResponse.json({ success: true });
 }

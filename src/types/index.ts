@@ -42,7 +42,6 @@ export interface BrandConfig {
   siteName: string;
   siteNameTh: string;
   domain: string;
-  lineUrl: string;
   logoText: string;
 }
 
