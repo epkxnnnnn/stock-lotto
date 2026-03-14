@@ -27,6 +27,33 @@ function mapRow(r: Record<string, unknown>): StockResult {
   };
 }
 
+function shiftDate(dateStr: string, days: number): string {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toLocaleDateString('en-CA');
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 max-md:grid-cols-1">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] px-5 py-[18px] flex items-center gap-3.5"
+          style={{ animation: 'pulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }}
+        >
+          <div className="w-11 h-11 rounded-[10px] bg-[var(--bg-secondary)]" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-32 bg-[var(--bg-secondary)] rounded" />
+            <div className="h-3 w-24 bg-[var(--bg-secondary)] rounded" />
+          </div>
+          <div className="h-6 w-20 bg-[var(--bg-secondary)] rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function ResultsClient() {
   const config = getBrandConfig();
   const [selectedDate, setSelectedDate] = useState(
@@ -55,7 +82,6 @@ export default function ResultsClient() {
     if (data && data.length > 0) {
       setResults(data.map((r: Record<string, unknown>) => mapRow(r)));
     } else {
-      // Fallback: show markets with no data
       const markets = getMarkets(config.brand);
       setResults(
         markets.map((m) => ({
@@ -83,51 +109,80 @@ export default function ResultsClient() {
     fetchResults();
   }, [fetchResults]);
 
+  const resultedCount = results.filter(r => r.winningNumber).length;
+  const totalCount = results.length;
+  const allResulted = resultedCount === totalCount && totalCount > 0;
+
+  const formattedDate = new Date(selectedDate + 'T00:00:00').toLocaleDateString('th-TH', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const canGoForward = selectedDate < todayStr;
+
   return (
     <div className="py-10">
       <SectionTitle>&#x1F4CB; ผลหวยย้อนหลัง</SectionTitle>
 
-      {/* Date picker */}
-      <div className="flex items-center gap-4 mb-6 flex-wrap">
-        <label className="text-sm text-[var(--text-secondary)]">เลือกวันที่:</label>
-        <input
-          type="date"
-          value={selectedDate}
-          max={todayStr}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg px-4 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors [color-scheme:dark]"
-        />
-        {!isToday && (
-          <button
-            onClick={() => setSelectedDate(todayStr)}
-            className="text-xs text-[var(--brand-primary)] hover:text-[var(--brand-light)] transition-colors"
-          >
-            กลับไปวันนี้
-          </button>
-        )}
-      </div>
+      {/* Date navigation */}
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-4 md:p-5 mb-6">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          {/* Prev/Next buttons + date picker */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedDate(shiftDate(selectedDate, -1))}
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)]/30 transition-all text-sm"
+              title="วันก่อนหน้า"
+            >
+              &#x25C0;
+            </button>
+            <input
+              type="date"
+              value={selectedDate}
+              max={todayStr}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-4 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors [color-scheme:dark]"
+            />
+            <button
+              onClick={() => canGoForward && setSelectedDate(shiftDate(selectedDate, 1))}
+              disabled={!canGoForward}
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)]/30 transition-all text-sm disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-[var(--text-secondary)] disabled:hover:border-[var(--border)]"
+              title="วันถัดไป"
+            >
+              &#x25B6;
+            </button>
+            {!isToday && (
+              <button
+                onClick={() => setSelectedDate(todayStr)}
+                className="text-xs text-[var(--brand-primary)] hover:text-[var(--brand-light)] transition-colors ml-2 px-3 py-1.5 rounded-lg bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20"
+              >
+                วันนี้
+              </button>
+            )}
+          </div>
 
-      {/* Date display */}
-      <div className="mb-6">
-        <p className="text-[var(--text-secondary)] text-sm">
-          {config.siteNameTh} &mdash;{' '}
-          {new Date(selectedDate + 'T00:00:00').toLocaleDateString('th-TH', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}
-        </p>
+          {/* Date display + stats */}
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <div className="text-sm font-medium text-[var(--text-primary)]">{formattedDate}</div>
+              {!loading && (
+                <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                  {allResulted ? (
+                    <span className="text-[var(--accent-green)]">&#x2714; ออกผลครบทุกรอบ</span>
+                  ) : (
+                    <>ออกผลแล้ว <span className="text-[var(--brand-primary)]">{resultedCount}/{totalCount}</span> รอบ</>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Results */}
-      {loading ? (
-        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-10 text-center">
-          <p className="text-[var(--text-muted)] text-sm">กำลังโหลด...</p>
-        </div>
-      ) : (
-        <ResultsGrid results={results} />
-      )}
+      {loading ? <LoadingSkeleton /> : <ResultsGrid results={results} />}
     </div>
   );
 }
