@@ -49,12 +49,6 @@ const endpoints = [
   },
   {
     method: 'GET',
-    path: '/api/v1/rates',
-    description: 'Payout rate tables',
-    params: 'None',
-  },
-  {
-    method: 'GET',
     path: '/api/v1/status',
     description: 'Health check + your API key info',
     params: 'None',

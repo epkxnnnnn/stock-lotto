@@ -22,9 +22,6 @@ export default function Footer() {
           <Link href="/schedule" className="hover:text-[var(--text-secondary)] transition-colors">
             {t('nav.schedule')}
           </Link>
-          <Link href="/rates" className="hover:text-[var(--text-secondary)] transition-colors">
-            {t('nav.rates')}
-          </Link>
           <Link href="/verify" className="hover:text-[var(--text-secondary)] transition-colors">
             {t('nav.verify')}
           </Link>

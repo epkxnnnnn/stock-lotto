@@ -5,7 +5,6 @@ const translations: Record<string, { th: string; lo: string }> = {
   'nav.home': { th: 'หน้าแรก', lo: 'ໜ້າຫຼັກ' },
   'nav.results': { th: 'ผลหวย', lo: 'ຜົນຫວຍ' },
   'nav.schedule': { th: 'ตารางเวลา', lo: 'ຕາຕະລາງ' },
-  'nav.rates': { th: 'อัตราจ่าย', lo: 'ອັດຕາຈ່າຍ' },
   'nav.agent': { th: 'สมัครตัวแทน', lo: 'ສະໝັກຕົວແທນ' },
   'nav.about': { th: 'เกี่ยวกับ', lo: 'ກ່ຽວກັບ' },
 
@@ -50,6 +49,7 @@ const translations: Record<string, { th: string; lo: string }> = {
   // Hero / Chart area
   'hero.todayChart': { th: 'ผลประจำวัน', lo: 'ຜົນປະຈຳວັນ' },
   'hero.nextSettlement': { th: 'ปิดรอบถัดไป', lo: 'ປິດຮອບຕໍ່ໄປ' },
+  'hero.selectMarket': { th: 'เลือกตลาด', lo: 'ເລືອກຕະຫຼາດ' },
 
   // Results page
   'results.title': { th: 'ผลหวยย้อนหลัง', lo: 'ຜົນຫວຍຍ້ອນຫຼັງ' },
@@ -66,15 +66,6 @@ const translations: Record<string, { th: string; lo: string }> = {
   'schedule.openTime': { th: 'เวลาเปิด', lo: 'ເວລາເປີດ' },
   'schedule.closeTime': { th: 'เวลาปิด', lo: 'ເວລາປິດ' },
   'schedule.announceTime': { th: 'เวลาออกผล', lo: 'ເວລາອອກຜົນ' },
-
-  // Rates page
-  'rates.title': { th: 'อัตราจ่าย', lo: 'ອັດຕາຈ່າຍ' },
-  'rates.type': { th: 'ประเภท', lo: 'ປະເພດ' },
-  'rates.rate': { th: 'อัตรา', lo: 'ອັດຕາ' },
-  'rates.description': { th: 'รายละเอียด', lo: 'ລາຍລະອຽດ' },
-  'rates.topRates': { th: 'อัตราจ่ายยอดนิยม', lo: 'ອັດຕາຈ່າຍຍອດນິຍົມ' },
-  'rates.allRates': { th: 'อัตราจ่ายทั้งหมด', lo: 'ອັດຕາຈ່າຍທັງໝົດ' },
-  'rates.ignored': { th: 'เลขที่ไม่รับ', lo: 'ເລກທີ່ບໍ່ຮັບ' },
 
   // About page
   'about.title': { th: 'เกี่ยวกับเรา', lo: 'ກ່ຽວກັບພວກເຮົາ' },

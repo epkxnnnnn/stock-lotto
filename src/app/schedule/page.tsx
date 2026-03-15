@@ -4,6 +4,7 @@ import { getMarkets } from '@/lib/theme/rounds';
 import { createClient } from '@supabase/supabase-js';
 import ScheduleTimeline from '@/components/ScheduleTimeline';
 import type { ScheduleMarketData } from '@/components/ScheduleTimeline';
+import TradingViewTicker from '@/components/TradingViewTicker';
 import JsonLd from '@/components/JsonLd';
 
 const scheduleConfig = getBrandConfig();
@@ -89,6 +90,7 @@ export default async function SchedulePage() {
         ]}
       />
       <div className="py-6">
+        <TradingViewTicker />
         <ScheduleTimeline initialMarkets={scheduleMarkets} brand={brand} today={today} />
       </div>
     </>
