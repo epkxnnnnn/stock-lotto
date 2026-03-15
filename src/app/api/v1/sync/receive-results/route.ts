@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { buildKhongToMarketMap } from '@/lib/sync/khong-mapping';
+import { computeResultHash } from '@/lib/verify';
 import { vvipMarkets } from '@/config/markets-vvip';
 import { platinumMarkets } from '@/config/markets-platinum';
 
@@ -102,6 +103,16 @@ export async function POST(request: NextRequest) {
       );
   }
 
+  // Compute result hash for integrity
+  const resultHash = computeResultHash({
+    source: mapped.source,
+    market: mapped.code,
+    roundDate,
+    winningNumber: top,
+    winningNumber2d: bottom || null,
+    resultTime: now,
+  });
+
   // Update result — only if winning_number is not already set (idempotent)
   const { data: updated, error: updateError } = await supabase
     .from('stock_results')
@@ -111,6 +122,7 @@ export async function POST(request: NextRequest) {
       status: 'resulted',
       result_time: now,
       generation_method: 'manual',
+      result_hash: resultHash,
       updated_at: now,
     })
     .eq('source', mapped.source)

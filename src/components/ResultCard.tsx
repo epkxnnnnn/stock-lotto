@@ -3,7 +3,9 @@
 import type { StockResult } from '@/types';
 import NumberRenderer from './NumberRenderer';
 import FlagIcon from './FlagIcon';
+import VerifiedBadge from './VerifiedBadge';
 import { useI18n } from '@/lib/i18n';
+import { getStockSymbol } from '@/lib/stock-symbols';
 
 interface ResultCardProps {
   result: StockResult;
@@ -14,6 +16,7 @@ export default function ResultCard({ result }: ResultCardProps) {
   const isWaiting = !result.winningNumber;
   const closeDate = new Date(result.closeTime);
   const formattedClose = closeDate.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Bangkok' });
+  const stockInfo = getStockSymbol(result.market);
 
   return (
     <div
@@ -40,8 +43,16 @@ export default function ResultCard({ result }: ResultCardProps) {
             </span>
           )}
         </div>
-        <div className="text-[10px] text-[var(--text-muted)] font-[family-name:var(--font-mono)]">
-          {formattedClose}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] text-[var(--text-muted)] font-[family-name:var(--font-mono)]">
+            {formattedClose}
+          </span>
+          {stockInfo && (
+            <span className="text-[9px] text-[var(--text-muted)]">{stockInfo.indexName}</span>
+          )}
+          {result.resultHash && (
+            <VerifiedBadge hash={result.resultHash} method={result.generationMethod} />
+          )}
         </div>
       </div>
 

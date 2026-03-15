@@ -88,6 +88,25 @@ const translations: Record<string, { th: string; lo: string }> = {
   'agent.requirements': { th: 'คุณสมบัติ', lo: 'ຄຸນສົມບັດ' },
   'agent.register': { th: 'ลงทะเบียน', lo: 'ລົງທະບຽນ' },
 
+  // Verify page
+  'nav.verify': { th: 'ตรวจสอบ', lo: 'ກວດສອບ' },
+  'verify.title': { th: 'ตรวจสอบผลหวยหุ้น', lo: 'ກວດສອບຜົນຫວຍຮຸ້ນ' },
+  'verify.howItWorks': { th: 'วิธีตรวจสอบ', lo: 'ວິທີກວດສອບ' },
+  'verify.weekday': { th: 'วันจันทร์-ศุกร์', lo: 'ວັນຈັນ-ສຸກ' },
+  'verify.weekend': { th: 'วันเสาร์-อาทิตย์', lo: 'ວັນເສົາ-ອາທິດ' },
+  'verify.weekdayDesc': { th: 'อ้างอิงจากดัชนีตลาดหุ้นจริง — เลขมาจากราคาดัชนีตลาดหุ้น ณ เวลาปิดรอบ พร้อมกราฟแสดงราคาจริง', lo: 'ອ້າງອີງຈາກດັດສະນີຕະຫຼາດຮຸ້ນຈິງ — ເລກມາຈາກລາຄາດັດສະນີ ນ ເວລາປິດຮອບ' },
+  'verify.weekendDesc': { th: 'Provably Fair — เลขคำนวณจาก Seed ด้วย HMAC-SHA256 เผยแพร่ Seed ให้ตรวจสอบได้', lo: 'Provably Fair — ເລກຄຳນວນຈາກ Seed ດ້ວຍ HMAC-SHA256 ເຜີຍແຜ່ Seed ໃຫ້ກວດສອບໄດ້' },
+  'verify.hashDesc': { th: 'Hash ยืนยันความถูกต้อง — ป้องกันการแก้ไขข้อมูลย้อนหลัง ทุกผลหวยมี SHA-256 hash ล็อกไว้', lo: 'Hash ຢືນຢັນຄວາມຖືກຕ້ອງ — ປ້ອງກັນການແກ້ໄຂຂໍ້ມູນຍ້ອນຫຼັງ' },
+  'verify.lookup': { th: 'ค้นหาผลหวยเพื่อตรวจสอบ', lo: 'ຊອກຫາຜົນຫວຍເພື່ອກວດສອບ' },
+  'verify.check': { th: 'ตรวจสอบ', lo: 'ກວດສອບ' },
+  'verify.stockRef': { th: 'อ้างอิงตลาดหุ้น', lo: 'ອ້າງອີງຕະຫຼາດຮຸ້ນ' },
+  'verify.provablyFair': { th: 'Provably Fair', lo: 'Provably Fair' },
+  'verify.manual': { th: 'Manual', lo: 'Manual' },
+  'verify.refPrice': { th: 'ราคาอ้างอิง', lo: 'ລາຄາອ້າງອີງ' },
+  'verify.verified': { th: 'ผ่านการตรวจสอบ — Hash ตรงกัน', lo: 'ຜ່ານການກວດສອບ — Hash ກົງກັນ' },
+  'verify.tampered': { th: 'ไม่ผ่าน — Hash ไม่ตรงกัน', lo: 'ບໍ່ຜ່ານ — Hash ບໍ່ກົງກັນ' },
+  'verify.verifyCommand': { th: 'คำสั่งตรวจสอบด้วย OpenSSL:', lo: 'ຄຳສັ່ງກວດສອບດ້ວຍ OpenSSL:' },
+
   // Common
   'common.loading': { th: 'กำลังโหลด...', lo: 'ກຳລັງໂຫລດ...' },
   'common.error': { th: 'เกิดข้อผิดพลาด', lo: 'ເກີດຂໍ້ຜິດພາດ' },

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getBrandConfig } from '@/lib/theme/config';
 import { payoutRates, ignoredThreeDigitNumbers } from '@/config/payout-rates';
 import RatesClient from './RatesClient';
+import JsonLd from '@/components/JsonLd';
 
 const config = getBrandConfig();
 
@@ -18,9 +19,17 @@ export const metadata: Metadata = {
 
 export default function RatesPage() {
   return (
-    <RatesClient
-      payoutRates={payoutRates}
-      ignoredNumbers={ignoredThreeDigitNumbers}
-    />
+    <>
+      <JsonLd
+        breadcrumbs={[
+          { name: 'หน้าแรก', href: '/' },
+          { name: 'อัตราจ่าย', href: '/rates' },
+        ]}
+      />
+      <RatesClient
+        payoutRates={payoutRates}
+        ignoredNumbers={ignoredThreeDigitNumbers}
+      />
+    </>
   );
 }

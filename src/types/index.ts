@@ -14,9 +14,11 @@ export interface Market {
   khongTemplateId: number;  // Khong lottery_templates.id
   khongSlug: string;        // Khong lottery_templates.slug
   resultSourceUrl?: string; // URL for auto-fetching results
+  stockSymbol: string;     // TradingView symbol e.g. "TVC:NI225"
+  stockIndex: string;      // Human-readable e.g. "Nikkei 225"
 }
 
-export type GenerationMethod = 'auto' | 'manual';
+export type GenerationMethod = 'auto' | 'manual' | 'stock_ref';
 
 export interface StockResult {
   id: string;
@@ -32,6 +34,9 @@ export interface StockResult {
   resultTime: string | null;
   status: ResultStatus;
   generationMethod: GenerationMethod | null;
+  resultHash: string | null;
+  referencePrice: string | null;
+  generationSeed: string | null;
   createdAt: string;
   updatedAt: string;
 }

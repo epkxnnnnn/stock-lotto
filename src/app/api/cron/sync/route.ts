@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createKhongClient } from '@/lib/supabase/khong';
 import { buildKhongToMarketMap, getAllTemplateIds } from '@/lib/sync/khong-mapping';
+import { computeResultHash } from '@/lib/verify';
 import { vvipMarkets } from '@/config/markets-vvip';
 import { platinumMarkets } from '@/config/markets-platinum';
 
@@ -139,6 +140,15 @@ export async function GET(request: NextRequest) {
           // Only sync today's results
           if (bangkokDate !== today) continue;
 
+          const resultHash = computeResultHash({
+            source: mapped.source,
+            market: mapped.code,
+            roundDate: bangkokDate,
+            winningNumber: meta.top,
+            winningNumber2d: meta.bottom,
+            resultTime: meta.created_at,
+          });
+
           const { error: updateError } = await supabase
             .from('stock_results')
             .update({
@@ -147,6 +157,7 @@ export async function GET(request: NextRequest) {
               status: 'resulted',
               result_time: meta.created_at,
               generation_method: 'manual',
+              result_hash: resultHash,
               updated_at: now.toISOString(),
             })
             .eq('source', mapped.source)

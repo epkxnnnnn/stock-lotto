@@ -32,7 +32,10 @@ function mapRow(r: Record<string, unknown>): StockResult {
     closeTime: r.close_time as string,
     resultTime: r.result_time as string | null,
     status: r.status as 'open' | 'closed' | 'resulted',
-    generationMethod: (r.generation_method as 'auto' | 'manual' | null) ?? null,
+    generationMethod: (r.generation_method as 'auto' | 'manual' | 'stock_ref' | null) ?? null,
+    resultHash: (r.result_hash as string | null) ?? null,
+    referencePrice: (r.reference_price as string | null) ?? null,
+    generationSeed: (r.generation_seed as string | null) ?? null,
     createdAt: r.created_at as string,
     updatedAt: r.updated_at as string,
   };
@@ -68,6 +71,9 @@ async function getResults(brand: string, date: string): Promise<StockResult[]> {
       resultTime: null,
       status: 'open' as const,
       generationMethod: null,
+      resultHash: null,
+      referencePrice: null,
+      generationSeed: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }));

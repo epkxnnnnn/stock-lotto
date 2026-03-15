@@ -4,6 +4,7 @@ import { getMarkets } from '@/lib/theme/rounds';
 import { createClient } from '@supabase/supabase-js';
 import ScheduleTimeline from '@/components/ScheduleTimeline';
 import type { ScheduleMarketData } from '@/components/ScheduleTimeline';
+import JsonLd from '@/components/JsonLd';
 
 const scheduleConfig = getBrandConfig();
 const scheduleRoundCount = scheduleConfig.brand === 'platinum' ? 15 : 13;
@@ -80,8 +81,16 @@ export default async function SchedulePage() {
   });
 
   return (
-    <div className="py-6">
-      <ScheduleTimeline initialMarkets={scheduleMarkets} brand={brand} today={today} />
-    </div>
+    <>
+      <JsonLd
+        breadcrumbs={[
+          { name: 'หน้าแรก', href: '/' },
+          { name: 'ตารางเวลา', href: '/schedule' },
+        ]}
+      />
+      <div className="py-6">
+        <ScheduleTimeline initialMarkets={scheduleMarkets} brand={brand} today={today} />
+      </div>
+    </>
   );
 }

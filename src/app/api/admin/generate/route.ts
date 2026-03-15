@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { computeResultHash, deriveNumbersFromSeed } from '@/lib/verify';
 import crypto from 'crypto';
 
 /**
@@ -49,11 +50,20 @@ export async function POST(request: NextRequest) {
   const results: { market: string; source: string; top: string; bottom: string }[] = [];
 
   for (const row of pending) {
-    // Generate cryptographically random numbers
-    const seed = crypto.randomBytes(16).toString('hex');
-    const rngBytes = crypto.randomBytes(4);
-    const top = (rngBytes.readUInt16BE(0) % 1000).toString().padStart(3, '0');
-    const bottom = (rngBytes.readUInt16BE(2) % 100).toString().padStart(2, '0');
+    // Provably Fair: generate seed, derive numbers deterministically via HMAC-SHA256
+    const seed = crypto.randomBytes(32).toString('hex');
+    const { threeDigit: top, twoDigit: bottom } = deriveNumbersFromSeed(seed, row.source, row.market, date);
+
+    const resultTime = new Date().toISOString();
+    const resultHash = computeResultHash({
+      source: row.source,
+      market: row.market,
+      roundDate: date,
+      winningNumber: top,
+      winningNumber2d: bottom,
+      resultTime,
+      seed,
+    });
 
     const { error: updateError } = await supabase
       .from('stock_results')
@@ -61,9 +71,10 @@ export async function POST(request: NextRequest) {
         winning_number: top,
         winning_number_2d: bottom,
         status: 'resulted',
-        result_time: new Date().toISOString(),
+        result_time: resultTime,
         generation_method: 'auto',
         generation_seed: seed,
+        result_hash: resultHash,
       })
       .eq('id', row.id);
 

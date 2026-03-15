@@ -27,6 +27,9 @@ function buildResults(brand: Brand): StockResult[] {
       resultTime: num ? `${today}T${market.closeTime}:00+07:00` : null,
       status,
       generationMethod: num ? 'auto' as const : null,
+      resultHash: null,
+      referencePrice: null,
+      generationSeed: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

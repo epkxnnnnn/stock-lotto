@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getBrandConfig } from '@/lib/theme/config';
 import ResultsClient from './ResultsClient';
+import JsonLd from '@/components/JsonLd';
 
 const config = getBrandConfig();
 
@@ -16,5 +17,15 @@ export const metadata: Metadata = {
 };
 
 export default function ResultsPage() {
-  return <ResultsClient />;
+  return (
+    <>
+      <JsonLd
+        breadcrumbs={[
+          { name: 'หน้าแรก', href: '/' },
+          { name: 'ผลหวยย้อนหลัง', href: '/results' },
+        ]}
+      />
+      <ResultsClient />
+    </>
+  );
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { computeResultHash } from '@/lib/verify';
 
 export async function POST(request: NextRequest) {
   const supabase = createAdminClient();
@@ -55,6 +56,16 @@ export async function POST(request: NextRequest) {
   let resultData;
 
   if (existing) {
+    const resultTime = new Date().toISOString();
+    const resultHash = computeResultHash({
+      source,
+      market,
+      roundDate: round_date,
+      winningNumber: winning_number,
+      winningNumber2d: winning_number_2d,
+      resultTime,
+    });
+
     const { data: updated, error: updateError } = await supabase
       .from('stock_results')
       .update({
@@ -62,7 +73,8 @@ export async function POST(request: NextRequest) {
         winning_number_2d,
         generation_method: 'manual',
         status: 'resulted',
-        result_time: new Date().toISOString(),
+        result_time: resultTime,
+        result_hash: resultHash,
       })
       .eq('id', existing.id)
       .select()

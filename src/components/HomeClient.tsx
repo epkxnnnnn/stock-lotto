@@ -31,7 +31,10 @@ function mapRow(r: Record<string, unknown>): StockResult {
     closeTime: r.close_time as string,
     resultTime: r.result_time as string | null,
     status: r.status as 'open' | 'closed' | 'resulted',
-    generationMethod: (r.generation_method as 'auto' | 'manual' | null) ?? null,
+    generationMethod: (r.generation_method as 'auto' | 'manual' | 'stock_ref' | null) ?? null,
+    resultHash: (r.result_hash as string | null) ?? null,
+    referencePrice: (r.reference_price as string | null) ?? null,
+    generationSeed: (r.generation_seed as string | null) ?? null,
     createdAt: r.created_at as string,
     updatedAt: r.updated_at as string,
   };
@@ -95,6 +98,8 @@ export default function HomeClient({ initialResults, initialYesterdayResults, br
                     winningNumber2d: (updated.winning_number_2d as string) ?? null,
                     status: (updated.status as StockResult['status']) ?? r.status,
                     resultTime: (updated.result_time as string) ?? null,
+                    resultHash: (updated.result_hash as string) ?? null,
+                    generationMethod: (updated.generation_method as StockResult['generationMethod']) ?? r.generationMethod,
                   }
                 : r
             )

@@ -4,7 +4,9 @@ import type { StockResult } from '@/types';
 import ResultCard from './ResultCard';
 import FlagIcon from './FlagIcon';
 import NumberRenderer from './NumberRenderer';
+import VerifiedBadge from './VerifiedBadge';
 import { useI18n } from '@/lib/i18n';
+import { getStockSymbol } from '@/lib/stock-symbols';
 
 interface ResultsGridProps {
   results: StockResult[];
@@ -32,6 +34,17 @@ function StatusBadge({ status, t }: { status: string; t: (key: string) => string
   );
 }
 
+function StockInfoCell({ result }: { result: StockResult }) {
+  if (result.resultHash) {
+    return <VerifiedBadge hash={result.resultHash} method={result.generationMethod} />;
+  }
+  const si = getStockSymbol(result.market);
+  if (si) {
+    return <span className="text-[9px] text-[var(--text-muted)]">{si.indexName}</span>;
+  }
+  return null;
+}
+
 export default function ResultsGrid({ results }: ResultsGridProps) {
   const { t, marketLabel } = useI18n();
 
@@ -47,6 +60,7 @@ export default function ResultsGrid({ results }: ResultsGridProps) {
               <th className="text-right py-2 px-4 font-medium">{t('table.number2d')}</th>
               <th className="text-center py-2 px-4 font-medium">{t('table.status')}</th>
               <th className="text-right py-2 px-4 font-medium">{t('table.closeTime')}</th>
+              <th className="text-center py-2 px-4 font-medium w-24"></th>
             </tr>
           </thead>
           <tbody>
@@ -81,6 +95,9 @@ export default function ResultsGrid({ results }: ResultsGridProps) {
                   <span className="text-[var(--text-secondary)] font-[family-name:var(--font-mono)] text-xs">
                     {formatTime(r.closeTime)}
                   </span>
+                </td>
+                <td className="py-2.5 px-4 text-center">
+                  <StockInfoCell result={r} />
                 </td>
               </tr>
             ))}
