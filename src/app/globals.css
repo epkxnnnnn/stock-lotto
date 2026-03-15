@@ -41,6 +41,17 @@ body {
   100% { transform: translateX(-50%); }
 }
 
+/* Sparkline draw animation */
+@keyframes sparkline-draw {
+  from { stroke-dashoffset: var(--sparkline-length); }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes sparkline-glow {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
 /* Container utility */
 .container-main {
   max-width: 1400px;

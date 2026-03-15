@@ -31,8 +31,26 @@ function StatusBadge({ status, t }: { status: string; t: (key: string) => string
   );
 }
 
-// Mini sparkline for visual interest
-function MiniSparkline({ resulted }: { resulted: boolean }) {
+// Seeded PRNG from market name for deterministic random per row
+function seededRandom(seed: number): () => number {
+  let s = seed;
+  return () => {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    return s / 0x7fffffff;
+  };
+}
+
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+// Mini sparkline with random bullish/bearish animation
+function MiniSparkline({ resulted, market }: { resulted: boolean; market: string }) {
   if (!resulted) {
     return (
       <svg width="48" height="16" viewBox="0 0 48 16" className="text-[var(--text-muted)]">
@@ -41,13 +59,47 @@ function MiniSparkline({ resulted }: { resulted: boolean }) {
     );
   }
 
-  // Decorative sparkline (static shape, purely visual)
-  const points = [12, 8, 10, 5, 9, 3, 7, 4, 6, 2];
+  const seed = hashString(market);
+  const rng = seededRandom(seed);
+  const isBullish = rng() > 0.45; // ~55% bullish
+
+  // Generate points with trend + noise
+  const numPoints = 10;
+  const points: number[] = [];
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / (numPoints - 1);
+    const trend = isBullish ? 13 - t * 10 : 3 + t * 10;
+    const noise = (rng() - 0.5) * 6;
+    points.push(Math.max(1, Math.min(15, trend + noise)));
+  }
+
   const path = points.map((y, i) => `${i === 0 ? 'M' : 'L'}${i * 5.3} ${y}`).join(' ');
+  const pathLength = points.reduce((acc, y, i) => {
+    if (i === 0) return 0;
+    const dx = 5.3;
+    const dy = y - points[i - 1];
+    return acc + Math.sqrt(dx * dx + dy * dy);
+  }, 0);
+
+  const color = isBullish ? 'text-[var(--accent-green)]' : 'text-red-500';
+  const delay = (seed % 5) * 0.15; // stagger per row
 
   return (
-    <svg width="48" height="16" viewBox="0 0 48 16" className="text-[var(--accent-green)]">
-      <path d={path} fill="none" stroke="currentColor" strokeWidth="1.5" />
+    <svg width="48" height="16" viewBox="0 0 48 16" className={color}>
+      <path
+        d={path}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          ['--sparkline-length' as string]: pathLength,
+          strokeDasharray: pathLength,
+          strokeDashoffset: pathLength,
+          animation: `sparkline-draw 1.2s ease-out ${delay}s forwards, sparkline-glow 2s ease-in-out ${delay + 1.2}s infinite`,
+        }}
+      />
     </svg>
   );
 }
@@ -105,7 +157,7 @@ export default function MarketOverviewTable({ results }: MarketOverviewTableProp
 
                 {/* Sparkline */}
                 <td className="py-2.5 px-2 text-center">
-                  <MiniSparkline resulted={!!r.winningNumber} />
+                  <MiniSparkline resulted={!!r.winningNumber} market={r.market} />
                 </td>
 
                 {/* 3-digit Result */}
