@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import type { StockResult } from '@/types';
 import FlagIcon from './FlagIcon';
 import CountdownTimer from './CountdownTimer';
@@ -20,6 +20,168 @@ function formatTime(iso: string): string {
     minute: '2-digit',
     timeZone: 'Asia/Bangkok',
   });
+}
+
+// --- Countdown card sub-components ---
+
+// Seeded PRNG
+function seededRng(seed: number): () => number {
+  let s = seed;
+  return () => {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    return s / 0x7fffffff;
+  };
+}
+
+function hashStr(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h) + str.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h);
+}
+
+// Animated SVG sparkline behind the countdown
+function BackgroundSparkline({ market }: { market: string }) {
+  const path = useMemo(() => {
+    const seed = hashStr(market + 'bg');
+    const rng = seededRng(seed);
+    const points: number[] = [];
+    const count = 40;
+    let y = 50;
+    for (let i = 0; i < count; i++) {
+      y += (rng() - 0.48) * 12;
+      y = Math.max(15, Math.min(85, y));
+      points.push(y);
+    }
+    return points.map((py, i) => `${i === 0 ? 'M' : 'L'}${(i / (count - 1)) * 100} ${py}`).join(' ');
+  }, [market]);
+
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      className="absolute inset-0 w-full h-full pointer-events-none z-0"
+      style={{ opacity: 0.06 }}
+    >
+      <path d={path} fill="none" stroke="var(--brand-primary)" strokeWidth="0.8" />
+      <path d={`${path} L100 100 L0 100 Z`} fill="var(--brand-primary)" opacity="0.3" />
+    </svg>
+  );
+}
+
+// Circular progress ring around the flag icon
+function SessionProgressRing({ targetTime, children }: { targetTime: string; children: ReactNode }) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    // Assume 30min session window for progress calculation
+    const sessionDuration = 30 * 60 * 1000;
+    const update = () => {
+      const remaining = new Date(targetTime).getTime() - Date.now();
+      const elapsed = sessionDuration - remaining;
+      setProgress(Math.max(0, Math.min(1, elapsed / sessionDuration)));
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [targetTime]);
+
+  const radius = 30;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - progress);
+
+  return (
+    <div className="relative w-[72px] h-[72px] flex items-center justify-center">
+      <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 72 72">
+        {/* Track */}
+        <circle cx="36" cy="36" r={radius} fill="none" stroke="var(--border)" strokeWidth="2" />
+        {/* Progress */}
+        <circle
+          cx="36" cy="36" r={radius}
+          fill="none"
+          stroke="var(--brand-primary)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-linear"
+          style={{ filter: 'drop-shadow(0 0 3px var(--brand-primary))' }}
+        />
+      </svg>
+      {children}
+    </div>
+  );
+}
+
+// Horizontal session progress bar
+function SessionProgressBar({ targetTime }: { targetTime: string }) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const sessionDuration = 30 * 60 * 1000;
+    const update = () => {
+      const remaining = new Date(targetTime).getTime() - Date.now();
+      const elapsed = sessionDuration - remaining;
+      setProgress(Math.max(0, Math.min(1, elapsed / sessionDuration)));
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [targetTime]);
+
+  return (
+    <div className="px-4 pb-2">
+      <div className="flex items-center justify-between text-[9px] text-[var(--text-muted)] mb-1 font-[family-name:var(--font-mono)]">
+        <span>OPEN</span>
+        <span>{Math.round(progress * 100)}%</span>
+        <span>CLOSE</span>
+      </div>
+      <div className="h-1 bg-[var(--bg-primary)] rounded-full overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-1000 ease-linear"
+          style={{
+            width: `${progress * 100}%`,
+            background: `linear-gradient(90deg, var(--accent-green), var(--brand-primary))`,
+            boxShadow: '0 0 6px var(--brand-primary)',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Animated volume bars at the bottom
+function VolumeBars({ market }: { market: string }) {
+  const bars = useMemo(() => {
+    const seed = hashStr(market + 'vol');
+    const rng = seededRng(seed);
+    return Array.from({ length: 24 }, () => 0.15 + rng() * 0.85);
+  }, [market]);
+
+  return (
+    <div className="px-4 pb-3 pt-1">
+      <div className="flex items-end gap-[2px] h-6">
+        {bars.map((h, i) => (
+          <div
+            key={i}
+            className="flex-1 rounded-t-[1px] transition-all duration-500"
+            style={{
+              height: `${h * 100}%`,
+              background: h > 0.6 ? 'var(--brand-primary)' : 'var(--border)',
+              opacity: 0.5 + h * 0.5,
+              animationDelay: `${i * 0.05}s`,
+            }}
+          />
+        ))}
+      </div>
+      <div className="flex items-center justify-between mt-1">
+        <span className="text-[8px] text-[var(--text-muted)] font-[family-name:var(--font-mono)] uppercase tracking-wider">Vol</span>
+        <span className="text-[8px] text-[var(--text-muted)] font-[family-name:var(--font-mono)]">24 bars</span>
+      </div>
+    </div>
+  );
 }
 
 export default function HeroSplit({ nextRound, results, onCountdownExpire }: HeroSplitProps) {
@@ -117,8 +279,9 @@ export default function HeroSplit({ nextRound, results, onCountdownExpire }: Her
       </div>
 
       {/* Right: Countdown Widget (3 cols) */}
-      <div className="lg:col-span-3 panel p-4 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
+      <div className="lg:col-span-3 panel flex flex-col overflow-hidden relative">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] relative z-10">
           <span className="text-sm font-semibold text-[var(--text-primary)]">
             {t('hero.nextSettlement')}
           </span>
@@ -131,20 +294,37 @@ export default function HeroSplit({ nextRound, results, onCountdownExpire }: Her
         </div>
 
         {nextRound ? (
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <FlagIcon emoji={nextRound.flagEmoji} size={48} />
-            <h3 className="text-base font-semibold text-[var(--text-primary)] mt-3 text-center">
-              {marketLabel(nextRound.marketLabelTh, nextRound.marketLabelLo)}
-            </h3>
-            <p className="text-xs text-[var(--text-muted)] mt-1">
-              {t('countdown.closesAt')} {formatTime(nextRound.closeTime)}
-            </p>
-            <div className="mt-4">
+          <div className="flex-1 flex flex-col relative z-10">
+            {/* Background animated sparkline */}
+            <BackgroundSparkline market={nextRound.market} />
+
+            {/* Main content */}
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 gap-3">
+              {/* Flag with progress ring */}
+              <SessionProgressRing targetTime={nextRound.closeTime}>
+                <FlagIcon emoji={nextRound.flagEmoji} size={44} />
+              </SessionProgressRing>
+
+              <div className="text-center">
+                <h3 className="text-base font-semibold text-[var(--text-primary)]">
+                  {marketLabel(nextRound.marketLabelTh, nextRound.marketLabelLo)}
+                </h3>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  {t('countdown.closesAt')} {formatTime(nextRound.closeTime)}
+                </p>
+              </div>
+
               <CountdownTimer targetTime={nextRound.closeTime} onExpire={onCountdownExpire} />
             </div>
+
+            {/* Session progress bar */}
+            <SessionProgressBar targetTime={nextRound.closeTime} />
+
+            {/* Simulated volume bars */}
+            <VolumeBars market={nextRound.market} />
           </div>
         ) : (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center relative z-10">
             <p className="text-sm text-[var(--text-muted)]">{t('common.noData')}</p>
           </div>
         )}
