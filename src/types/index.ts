@@ -49,9 +49,3 @@ export interface BrandConfig {
   domain: string;
   logoText: string;
 }
-
-export interface PayoutRate {
-  type: string;
-  rate: number;
-  description: string;
-}
