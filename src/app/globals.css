@@ -52,6 +52,24 @@ body {
   50% { opacity: 1; }
 }
 
+/* Trading terminal row flash — green */
+@keyframes flash-green {
+  0% { background-color: rgba(34,197,94,0.15); }
+  100% { background-color: transparent; }
+}
+
+/* Trading terminal row flash — red */
+@keyframes flash-red {
+  0% { background-color: rgba(239,68,68,0.15); }
+  100% { background-color: transparent; }
+}
+
+/* Blink for live countdown */
+@keyframes blink-colon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 /* Container utility */
 .container-main {
   max-width: 1400px;
