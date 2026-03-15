@@ -77,6 +77,36 @@ body {
   50% { opacity: 0.3; }
 }
 
+/* Countdown card border glow */
+@keyframes border-glow {
+  0%, 100% { border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent); box-shadow: 0 0 12px color-mix(in srgb, var(--brand-primary) 8%, transparent); }
+  50% { border-color: color-mix(in srgb, var(--brand-primary) 60%, transparent); box-shadow: 0 0 24px color-mix(in srgb, var(--brand-primary) 15%, transparent), inset 0 0 12px color-mix(in srgb, var(--brand-primary) 4%, transparent); }
+}
+
+/* Countdown digit tick flash */
+@keyframes digit-tick {
+  0% { text-shadow: 0 0 12px var(--brand-primary); }
+  100% { text-shadow: 0 0 0 transparent; }
+}
+
+/* Progress bar moving dot */
+@keyframes progress-dot {
+  0%, 100% { filter: drop-shadow(0 0 3px var(--brand-primary)); }
+  50% { filter: drop-shadow(0 0 8px var(--brand-primary)) drop-shadow(0 0 16px var(--brand-primary)); }
+}
+
+/* Volume bars wave */
+@keyframes vol-wave {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.7); }
+}
+
+/* Radial pulse behind flag */
+@keyframes radial-ping {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
 /* Container utility */
 .container-main {
   max-width: 1400px;

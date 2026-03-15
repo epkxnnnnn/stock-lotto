@@ -26,12 +26,11 @@ function formatTime(iso: string): string {
 
 // --- Countdown card sub-components ---
 
-// Circular progress ring around the flag icon
+// Circular progress ring around the flag icon with radial ping
 function SessionProgressRing({ targetTime, children }: { targetTime: string; children: ReactNode }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Assume 30min session window for progress calculation
     const sessionDuration = 30 * 60 * 1000;
     const update = () => {
       const remaining = new Date(targetTime).getTime() - Date.now();
@@ -49,7 +48,18 @@ function SessionProgressRing({ targetTime, children }: { targetTime: string; chi
 
   return (
     <div className="relative w-[72px] h-[72px] flex items-center justify-center">
+      {/* Radial ping pulse behind the ring */}
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: 'radial-gradient(circle, var(--brand-primary), transparent 70%)',
+          opacity: 0.15,
+          animation: 'radial-ping 3s ease-out infinite',
+        }}
+      />
       <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 72 72">
+        {/* Outer glow track */}
+        <circle cx="36" cy="36" r={radius + 2} fill="none" stroke="var(--brand-primary)" strokeWidth="0.5" opacity="0.15" />
         {/* Track */}
         <circle cx="36" cy="36" r={radius} fill="none" stroke="var(--border)" strokeWidth="2" />
         {/* Progress */}
@@ -57,20 +67,31 @@ function SessionProgressRing({ targetTime, children }: { targetTime: string; chi
           cx="36" cy="36" r={radius}
           fill="none"
           stroke="var(--brand-primary)"
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           className="transition-all duration-1000 ease-linear"
-          style={{ filter: 'drop-shadow(0 0 3px var(--brand-primary))' }}
+          style={{ filter: 'drop-shadow(0 0 6px var(--brand-primary))' }}
         />
+        {/* Bright tip dot at the progress end */}
+        {progress > 0.02 && (
+          <circle
+            cx={36 + radius * Math.cos(2 * Math.PI * progress - Math.PI / 2)}
+            cy={36 + radius * Math.sin(2 * Math.PI * progress - Math.PI / 2)}
+            r="2.5"
+            fill="var(--brand-light)"
+            className="transition-all duration-1000 ease-linear"
+            style={{ filter: 'drop-shadow(0 0 4px var(--brand-primary))' }}
+          />
+        )}
       </svg>
       {children}
     </div>
   );
 }
 
-// Horizontal session progress bar
+// Horizontal session progress bar with glowing dot
 function SessionProgressBar({ targetTime }: { targetTime: string }) {
   const [progress, setProgress] = useState(0);
 
@@ -86,20 +107,33 @@ function SessionProgressBar({ targetTime }: { targetTime: string }) {
     return () => clearInterval(interval);
   }, [targetTime]);
 
+  const pct = Math.round(progress * 100);
+
   return (
     <div className="px-4 pb-2">
-      <div className="flex items-center justify-between text-[9px] text-[var(--text-muted)] mb-1 font-[family-name:var(--font-mono)]">
-        <span>OPEN</span>
-        <span>{Math.round(progress * 100)}%</span>
+      <div className="flex items-center justify-between text-[9px] text-[var(--text-muted)] mb-1.5 font-[family-name:var(--font-mono)]">
+        <span className="text-[var(--accent-green)]">OPEN</span>
+        <span className="text-[var(--brand-light)] font-bold">{pct}%</span>
         <span>CLOSE</span>
       </div>
-      <div className="h-1 bg-[var(--bg-primary)] rounded-full overflow-hidden">
+      <div className="relative h-1.5 bg-[var(--bg-primary)] rounded-full overflow-visible">
+        {/* Bar fill */}
         <div
-          className="h-full rounded-full transition-all duration-1000 ease-linear"
+          className="h-full rounded-full transition-all duration-1000 ease-linear relative"
           style={{
             width: `${progress * 100}%`,
             background: `linear-gradient(90deg, var(--accent-green), var(--brand-primary))`,
-            boxShadow: '0 0 6px var(--brand-primary)',
+            boxShadow: '0 0 8px var(--brand-primary)',
+          }}
+        />
+        {/* Glowing dot at the tip */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-1000 ease-linear"
+          style={{
+            left: `calc(${progress * 100}% - 6px)`,
+            background: 'var(--brand-light)',
+            boxShadow: '0 0 8px var(--brand-primary), 0 0 16px var(--brand-primary)',
+            animation: 'progress-dot 2s ease-in-out infinite',
           }}
         />
       </div>
@@ -202,7 +236,22 @@ export default function HeroSplit({ nextRound, results, onCountdownExpire }: Her
       </div>
 
       {/* Right: Countdown Widget (3 cols) */}
-      <div className="lg:col-span-3 panel flex flex-col overflow-hidden relative">
+      <div
+        className="lg:col-span-3 panel flex flex-col overflow-hidden relative"
+        style={{
+          animation: nextRound ? 'border-glow 4s ease-in-out infinite' : 'none',
+        }}
+      >
+        {/* Corner accent lines */}
+        {nextRound && (
+          <>
+            <div className="absolute top-0 left-0 w-8 h-px bg-gradient-to-r from-[var(--brand-primary)] to-transparent z-20" />
+            <div className="absolute top-0 left-0 w-px h-8 bg-gradient-to-b from-[var(--brand-primary)] to-transparent z-20" />
+            <div className="absolute bottom-0 right-0 w-8 h-px bg-gradient-to-l from-[var(--brand-primary)] to-transparent z-20" />
+            <div className="absolute bottom-0 right-0 w-px h-8 bg-gradient-to-t from-[var(--brand-primary)] to-transparent z-20" />
+          </>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] relative z-10">
           <span className="text-sm font-semibold text-[var(--text-primary)]">
@@ -221,8 +270,21 @@ export default function HeroSplit({ nextRound, results, onCountdownExpire }: Her
             {/* Background animated sparkline */}
             <BackgroundSparkline market={nextRound.market} />
 
+            {/* Subtle radial gradient glow from center */}
+            <div
+              className="absolute inset-0 pointer-events-none z-0"
+              style={{
+                background: 'radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--brand-primary) 6%, transparent), transparent 70%)',
+              }}
+            />
+
             {/* Main content */}
-            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 gap-3">
+            <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 gap-3 relative z-10">
+              {/* Market code tag */}
+              <span className="text-[9px] font-[family-name:var(--font-mono)] uppercase tracking-[0.15em] text-[var(--brand-primary)] opacity-60">
+                {nextRound.market.replace('_', ' ')}
+              </span>
+
               {/* Flag with progress ring */}
               <SessionProgressRing targetTime={nextRound.closeTime}>
                 <FlagIcon emoji={nextRound.flagEmoji} size={44} />
@@ -233,7 +295,7 @@ export default function HeroSplit({ nextRound, results, onCountdownExpire }: Her
                   {marketLabel(nextRound.marketLabelTh, nextRound.marketLabelLo)}
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                  {t('countdown.closesAt')} {formatTime(nextRound.closeTime)}
+                  {t('countdown.closesAt')} <span className="text-[var(--brand-light)] font-[family-name:var(--font-mono)]">{formatTime(nextRound.closeTime)}</span>
                 </p>
               </div>
 
@@ -243,7 +305,7 @@ export default function HeroSplit({ nextRound, results, onCountdownExpire }: Her
             {/* Session progress bar */}
             <SessionProgressBar targetTime={nextRound.closeTime} />
 
-            {/* Simulated volume bars */}
+            {/* Animated volume bars */}
             <VolumeBars market={nextRound.market} />
           </div>
         ) : (

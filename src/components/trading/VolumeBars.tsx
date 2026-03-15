@@ -43,12 +43,13 @@ export default function VolumeBars({ market, compact }: VolumeBarsProps) {
         {bars.map((h, i) => (
           <div
             key={i}
-            className="flex-1 rounded-t-[1px] transition-all duration-500"
+            className="flex-1 rounded-t-[1px]"
             style={{
               height: `${h * 100}%`,
               background: h > 0.6 ? 'var(--brand-primary)' : 'var(--border)',
               opacity: 0.5 + h * 0.5,
-              animationDelay: `${i * 0.05}s`,
+              transformOrigin: 'bottom',
+              animation: h > 0.6 ? `vol-wave ${2 + (i % 3) * 0.5}s ease-in-out ${i * 0.08}s infinite` : 'none',
             }}
           />
         ))}
