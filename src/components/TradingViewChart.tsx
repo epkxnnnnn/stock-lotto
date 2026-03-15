@@ -4,17 +4,18 @@ import { useState, useMemo } from 'react';
 
 interface TradingViewChartProps {
   symbol: string;
+  interval?: string;
   height?: number;
   hideSideToolbar?: boolean;
 }
 
-export default function TradingViewChart({ symbol, height = 420, hideSideToolbar = false }: TradingViewChartProps) {
+export default function TradingViewChart({ symbol, interval = '15', height = 420, hideSideToolbar = false }: TradingViewChartProps) {
   const [loaded, setLoaded] = useState(false);
 
   const iframeUrl = useMemo(() => {
     const params = new URLSearchParams({
       symbol,
-      interval: '15',
+      interval,
       hide_top_toolbar: '0',
       hide_legend: '0',
       hide_volume: '0',
@@ -32,7 +33,7 @@ export default function TradingViewChart({ symbol, height = 420, hideSideToolbar
       locale: 'th_TH',
     });
     return `https://s.tradingview.com/widgetembed/?${params.toString()}`;
-  }, [symbol, hideSideToolbar]);
+  }, [symbol, interval, hideSideToolbar]);
 
   return (
     <div className="relative w-full rounded overflow-hidden" style={{ height }} key={symbol}>

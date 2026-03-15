@@ -6,14 +6,14 @@ const TICKER_SYMBOLS = [
   { proName: 'TVC:DJI', title: 'Dow Jones' },
   { proName: 'TVC:NI225', title: 'Nikkei 225' },
   { proName: 'TVC:HSI', title: 'Hang Seng' },
-  { proName: 'SSE:000001', title: 'Shanghai' },
+  { proName: 'TVC:SHCOMP', title: 'Shanghai' },
   { proName: 'INDEX:TAIEX', title: 'TAIEX' },
-  { proName: 'KRX:KOSPI', title: 'KOSPI' },
+  { proName: 'TVC:KOSPI', title: 'KOSPI' },
   { proName: 'TVC:STI', title: 'Straits Times' },
   { proName: 'HOSE:VNINDEX', title: 'VN-Index' },
   { proName: 'MOEX:IMOEX', title: 'MOEX' },
   { proName: 'TVC:UKX', title: 'FTSE 100' },
-  { proName: 'XETR:DAX', title: 'DAX' },
+  { proName: 'TVC:DEU40', title: 'DAX' },
 ];
 
 export default function TradingViewTicker() {
