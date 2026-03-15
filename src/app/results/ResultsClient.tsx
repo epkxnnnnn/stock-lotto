@@ -6,6 +6,7 @@ import { getBrandConfig } from '@/lib/theme/config';
 import { getMarkets } from '@/lib/theme/rounds';
 import { useI18n } from '@/lib/i18n';
 import ResultsGrid from '@/components/ResultsGrid';
+import LiveClock from '@/components/trading/LiveClock';
 import type { StockResult } from '@/types';
 
 function mapRow(r: Record<string, unknown>): StockResult {
@@ -134,9 +135,12 @@ export default function ResultsClient() {
   return (
     <div className="py-6">
       {/* Page header */}
-      <h1 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-        {t('results.title')}
-      </h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-lg font-semibold text-[var(--text-primary)]">
+          {t('results.title')}
+        </h1>
+        <LiveClock />
+      </div>
 
       {/* Date navigation */}
       <div className="panel p-4 mb-4">
@@ -148,13 +152,21 @@ export default function ResultsClient() {
             >
               &#x25C0;
             </button>
-            <input
-              type="date"
-              value={selectedDate}
-              max={todayStr}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-[var(--bg-primary)] border border-[var(--border)] rounded px-3 py-1.5 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors [color-scheme:dark]"
-            />
+            <div className="relative">
+              <input
+                type="date"
+                value={selectedDate}
+                max={todayStr}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="bg-[var(--bg-primary)] border border-[var(--border)] rounded px-3 py-1.5 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors [color-scheme:dark]"
+              />
+              {isToday && (
+                <span
+                  className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[var(--accent-green)]"
+                  style={{ animation: 'pulse 2s infinite' }}
+                />
+              )}
+            </div>
             <button
               onClick={() => canGoForward && setSelectedDate(shiftDate(selectedDate, 1))}
               disabled={!canGoForward}
@@ -175,12 +187,24 @@ export default function ResultsClient() {
           <div className="text-right">
             <div className="text-sm font-medium text-[var(--text-primary)]">{formattedDate}</div>
             {!loading && (
-              <div className="text-[10px] text-[var(--text-muted)] mt-0.5 font-[family-name:var(--font-mono)]">
-                {allResulted ? (
-                  <span className="text-[var(--accent-green)]">{t('status.resulted')}</span>
-                ) : (
-                  <>{t('results.progress')} {resultedCount}/{totalCount} {t('results.rounds')}</>
-                )}
+              <div className="flex items-center justify-end gap-2 mt-0.5">
+                <span className="text-[10px] text-[var(--text-muted)] font-[family-name:var(--font-mono)]">
+                  {allResulted ? (
+                    <span className="text-[var(--accent-green)]">{t('status.resulted')}</span>
+                  ) : (
+                    <>{t('results.progress')} {resultedCount}/{totalCount} {t('results.rounds')}</>
+                  )}
+                </span>
+                {/* Mini progress bar */}
+                <div className="w-16 h-1.5 bg-[var(--bg-primary)] rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${totalCount > 0 ? (resultedCount / totalCount) * 100 : 0}%`,
+                      background: 'linear-gradient(90deg, var(--accent-green), var(--brand-primary))',
+                    }}
+                  />
+                </div>
               </div>
             )}
           </div>

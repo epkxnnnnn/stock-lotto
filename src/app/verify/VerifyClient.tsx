@@ -5,6 +5,8 @@ import { useI18n } from '@/lib/i18n';
 import StockChart from '@/components/StockChart';
 import FlagIcon from '@/components/FlagIcon';
 import NumberRenderer from '@/components/NumberRenderer';
+import MiniSparkline from '@/components/trading/MiniSparkline';
+import ChangeIndicator from '@/components/trading/ChangeIndicator';
 
 interface MarketOption {
   code: string;
@@ -96,7 +98,10 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
           {t('verify.howItWorks')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3">
+          <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3 relative overflow-hidden">
+            <svg className="absolute top-1 right-1 opacity-10" width="48" height="16" viewBox="0 0 48 16">
+              <polyline points="0,12 8,10 16,6 24,8 32,3 40,5 48,2" fill="none" stroke="var(--accent-green)" strokeWidth="1.5" />
+            </svg>
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-blue-400 text-xs font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
                 {t('verify.weekday')}
@@ -106,7 +111,10 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
               {t('verify.weekdayDesc')}
             </p>
           </div>
-          <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3">
+          <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3 relative overflow-hidden">
+            <svg className="absolute top-1 right-1 opacity-10" width="48" height="16" viewBox="0 0 48 16">
+              <polyline points="0,4 8,6 16,3 24,8 32,5 40,10 48,7" fill="none" stroke="var(--brand-primary)" strokeWidth="1.5" />
+            </svg>
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-emerald-400 text-xs font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
                 {t('verify.weekend')}
@@ -116,7 +124,10 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
               {t('verify.weekendDesc')}
             </p>
           </div>
-          <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3">
+          <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3 relative overflow-hidden">
+            <svg className="absolute top-1 right-1 opacity-10" width="48" height="16" viewBox="0 0 48 16">
+              <polyline points="0,8 8,5 16,9 24,4 32,7 40,3 48,6" fill="none" stroke="var(--brand-primary)" strokeWidth="1.5" />
+            </svg>
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-[var(--brand-primary)] text-xs font-semibold px-1.5 py-0.5 rounded bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20">
                 Hash
@@ -182,7 +193,7 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
 
       {/* Result Display */}
       {result && (
-        <div className="panel p-4 space-y-4">
+        <div className={`panel p-4 space-y-4 ${result.status === 'resulted' ? (result.verified !== false ? 'animate-[flash-green_2s_ease-out]' : 'animate-[flash-red_2s_ease-out]') : ''}`}>
           {/* Header */}
           <div className="flex items-center gap-3">
             <FlagIcon emoji={result.flagEmoji} size={32} />
@@ -201,7 +212,7 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
             )}
           </div>
 
-          {/* Numbers */}
+          {/* Numbers + sparkline/change indicator */}
           {result.winningNumber ? (
             <div className="flex items-center gap-4 py-2">
               <NumberRenderer number={result.winningNumber} size="lg" />
@@ -210,6 +221,10 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
                   {result.winningNumber2d}
                 </span>
               )}
+              <div className="flex flex-col items-center gap-0.5 ml-2">
+                <MiniSparkline resulted={true} market={result.market} />
+                <ChangeIndicator market={result.market} />
+              </div>
             </div>
           ) : (
             <p className="text-sm text-[var(--text-muted)]">{t('status.pending')}</p>
@@ -265,14 +280,24 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
                 <div className="flex items-center gap-2 pt-1">
                   {result.verified ? (
                     <>
-                      <svg className="w-4 h-4 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+                      <svg
+                        className="w-5 h-5 text-emerald-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        style={{ animation: 'verify-glow 0.6s ease-out forwards' }}
+                      >
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                       <span className="text-xs text-emerald-400 font-medium">{t('verify.verified')}</span>
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <svg
+                        className="w-5 h-5 text-red-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        style={{ animation: 'verify-glow 0.6s ease-out forwards' }}
+                      >
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                       </svg>
                       <span className="text-xs text-red-400 font-medium">{t('verify.tampered')}</span>

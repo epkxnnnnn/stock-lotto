@@ -1,12 +1,16 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { StockResult } from '@/types';
 import FlagIcon from './FlagIcon';
 import NumberRenderer from './NumberRenderer';
 import { useI18n } from '@/lib/i18n';
 import { marketCodeToSlug } from '@/lib/market-utils';
+import { seededRandom, hashString } from '@/lib/utils/seeded-random';
+import MiniSparkline from './trading/MiniSparkline';
+import ChangeIndicator from './trading/ChangeIndicator';
+import LiveClock from './trading/LiveClock';
 
 interface MarketOverviewTableProps {
   results: StockResult[];
@@ -85,97 +89,6 @@ function StatusBadge({ status, closeTime, t }: { status: string; closeTime: stri
   );
 }
 
-// Seeded PRNG
-function seededRandom(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 1103515245 + 12345) & 0x7fffffff;
-    return s / 0x7fffffff;
-  };
-}
-
-function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-// Mini sparkline with random bullish/bearish animation
-function MiniSparkline({ resulted, market }: { resulted: boolean; market: string }) {
-  if (!resulted) {
-    return (
-      <svg width="48" height="16" viewBox="0 0 48 16" className="text-[var(--text-muted)]">
-        <line x1="0" y1="8" x2="48" y2="8" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" opacity="0.3" />
-      </svg>
-    );
-  }
-
-  const seed = hashString(market);
-  const rng = seededRandom(seed);
-  const isBullish = rng() > 0.45;
-
-  const numPoints = 10;
-  const points: number[] = [];
-  for (let i = 0; i < numPoints; i++) {
-    const t = i / (numPoints - 1);
-    const trend = isBullish ? 13 - t * 10 : 3 + t * 10;
-    const noise = (rng() - 0.5) * 6;
-    points.push(Math.max(1, Math.min(15, trend + noise)));
-  }
-
-  const path = points.map((y, i) => `${i === 0 ? 'M' : 'L'}${i * 5.3} ${y}`).join(' ');
-  const pathLength = points.reduce((acc, y, i) => {
-    if (i === 0) return 0;
-    const dx = 5.3;
-    const dy = y - points[i - 1];
-    return acc + Math.sqrt(dx * dx + dy * dy);
-  }, 0);
-
-  const color = isBullish ? 'text-[var(--accent-green)]' : 'text-red-500';
-  const delay = (seed % 5) * 0.15;
-
-  return (
-    <svg width="48" height="16" viewBox="0 0 48 16" className={color}>
-      <path
-        d={path}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{
-          ['--sparkline-length' as string]: pathLength,
-          strokeDasharray: pathLength,
-          strokeDashoffset: pathLength,
-          animation: `sparkline-draw 1.2s ease-out ${delay}s forwards, sparkline-glow 2s ease-in-out ${delay + 1.2}s infinite`,
-        }}
-      />
-    </svg>
-  );
-}
-
-// Simulated % change badge (deterministic per market)
-function ChangeIndicator({ market }: { market: string }) {
-  const { isBullish, change } = useMemo(() => {
-    const seed = hashString(market + 'chg');
-    const rng = seededRandom(seed);
-    const bull = rng() > 0.45;
-    const val = (rng() * 2.5 + 0.1).toFixed(2);
-    return { isBullish: bull, change: val };
-  }, [market]);
-
-  return (
-    <span
-      className={`inline-flex items-center gap-0.5 text-[10px] font-[family-name:var(--font-mono)] font-medium ${isBullish ? 'text-[var(--accent-green)]' : 'text-red-400'}`}
-    >
-      <span>{isBullish ? '\u25B2' : '\u25BC'}</span>
-      <span>{change}%</span>
-    </span>
-  );
-}
 
 // Row with green/red flash on mount for resulted rows
 function TableRow({ r, index, t, marketLabel, onClick }: {
@@ -259,32 +172,6 @@ function TableRow({ r, index, t, marketLabel, onClick }: {
   );
 }
 
-// Live clock component
-function LiveClock() {
-  const [time, setTime] = useState('');
-
-  useEffect(() => {
-    const update = () => {
-      setTime(new Date().toLocaleTimeString('th-TH', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZone: 'Asia/Bangkok',
-      }));
-    };
-    update();
-    const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <span className="inline-flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-mono)] text-[var(--text-muted)]">
-      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-green)]" style={{ animation: 'pulse 2s infinite' }} />
-      <span className="tabular-nums">{time}</span>
-      <span className="text-[8px] opacity-60">ICT</span>
-    </span>
-  );
-}
 
 export default function MarketOverviewTable({ results }: MarketOverviewTableProps) {
   const { t, marketLabel } = useI18n();

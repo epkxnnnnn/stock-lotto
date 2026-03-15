@@ -7,6 +7,9 @@ import NumberRenderer from './NumberRenderer';
 import VerifiedBadge from './VerifiedBadge';
 import { useI18n } from '@/lib/i18n';
 import { getStockSymbol } from '@/lib/stock-symbols';
+import { seededRandom, hashString } from '@/lib/utils/seeded-random';
+import MiniSparkline from './trading/MiniSparkline';
+import ChangeIndicator from './trading/ChangeIndicator';
 
 interface ResultsGridProps {
   results: StockResult[];
@@ -56,6 +59,9 @@ export default function ResultsGrid({ results }: ResultsGridProps) {
           <thead>
             <tr className="border-b border-[var(--border)] text-[var(--text-muted)] text-xs">
               <th className="text-left py-2 px-4 font-medium">{t('table.asset')}</th>
+              <th className="text-center py-2 px-2 font-medium w-16">
+                <span className="sr-only">Trend</span>
+              </th>
               <th className="text-right py-2 px-4 font-medium">{t('table.number')}</th>
               <th className="text-right py-2 px-4 font-medium">{t('table.number2d')}</th>
               <th className="text-center py-2 px-4 font-medium">{t('table.status')}</th>
@@ -64,43 +70,67 @@ export default function ResultsGrid({ results }: ResultsGridProps) {
             </tr>
           </thead>
           <tbody>
-            {results.map((r) => (
-              <tr key={r.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-card-hover)] transition-colors">
-                <td className="py-2.5 px-4">
-                  <div className="flex items-center gap-2.5">
-                    <FlagIcon emoji={r.flagEmoji} size={24} className="ring-0" />
-                    <span className="text-[var(--text-primary)] font-medium">
-                      {marketLabel(r.marketLabelTh, r.marketLabelLo)}
+            {results.map((r, i) => {
+              const isResulted = !!r.winningNumber;
+              const seed = hashString(r.market);
+              const isBullish = seededRandom(seed)() > 0.45;
+              const flashClass = isResulted
+                ? (isBullish ? 'animate-[flash-green_2s_ease-out]' : 'animate-[flash-red_2s_ease-out]')
+                : '';
+
+              return (
+                <tr
+                  key={r.id}
+                  className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-card-hover)] transition-colors ${flashClass}`}
+                  style={{ animationDelay: `${i * 0.1}s`, animationFillMode: 'backwards' }}
+                >
+                  <td className="py-2.5 px-4">
+                    <div className="flex items-center gap-2.5">
+                      <FlagIcon emoji={r.flagEmoji} size={24} className="ring-0" />
+                      <div>
+                        <div className="text-[var(--text-primary)] font-medium">
+                          {marketLabel(r.marketLabelTh, r.marketLabelLo)}
+                        </div>
+                        <div className="text-[var(--text-muted)] text-[10px] font-[family-name:var(--font-mono)] uppercase">
+                          {r.market}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-2">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <MiniSparkline resulted={isResulted} market={r.market} />
+                      {isResulted && <ChangeIndicator market={r.market} />}
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-4 text-right">
+                    {r.winningNumber ? (
+                      <NumberRenderer number={r.winningNumber} size="sm" />
+                    ) : (
+                      <span className="text-[var(--text-muted)] font-[family-name:var(--font-mono)]">---</span>
+                    )}
+                  </td>
+                  <td className="py-2.5 px-4 text-right">
+                    {r.winningNumber2d ? (
+                      <span className="text-[var(--text-secondary)] font-[family-name:var(--font-mono)]">{r.winningNumber2d}</span>
+                    ) : (
+                      <span className="text-[var(--text-muted)] font-[family-name:var(--font-mono)]">--</span>
+                    )}
+                  </td>
+                  <td className="py-2.5 px-4 text-center">
+                    <StatusBadge status={r.status} t={t} />
+                  </td>
+                  <td className="py-2.5 px-4 text-right">
+                    <span className="text-[var(--text-secondary)] font-[family-name:var(--font-mono)] text-xs">
+                      {formatTime(r.closeTime)}
                     </span>
-                  </div>
-                </td>
-                <td className="py-2.5 px-4 text-right">
-                  {r.winningNumber ? (
-                    <NumberRenderer number={r.winningNumber} size="sm" />
-                  ) : (
-                    <span className="text-[var(--text-muted)] font-[family-name:var(--font-mono)]">---</span>
-                  )}
-                </td>
-                <td className="py-2.5 px-4 text-right">
-                  {r.winningNumber2d ? (
-                    <span className="text-[var(--text-secondary)] font-[family-name:var(--font-mono)]">{r.winningNumber2d}</span>
-                  ) : (
-                    <span className="text-[var(--text-muted)] font-[family-name:var(--font-mono)]">--</span>
-                  )}
-                </td>
-                <td className="py-2.5 px-4 text-center">
-                  <StatusBadge status={r.status} t={t} />
-                </td>
-                <td className="py-2.5 px-4 text-right">
-                  <span className="text-[var(--text-secondary)] font-[family-name:var(--font-mono)] text-xs">
-                    {formatTime(r.closeTime)}
-                  </span>
-                </td>
-                <td className="py-2.5 px-4 text-center">
-                  <StockInfoCell result={r} />
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="py-2.5 px-4 text-center">
+                    <StockInfoCell result={r} />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -3,6 +3,10 @@
 import NumberRenderer from './NumberRenderer';
 import FlagIcon from './FlagIcon';
 import { useI18n } from '@/lib/i18n';
+import { seededRandom, hashString } from '@/lib/utils/seeded-random';
+import BackgroundSparkline from './trading/BackgroundSparkline';
+import ChangeIndicator from './trading/ChangeIndicator';
+import VolumeBars from './trading/VolumeBars';
 
 export type DisplayStatus = 'upcoming' | 'open' | 'closed' | 'resulted';
 
@@ -53,6 +57,10 @@ export default function ScheduleMarketCard({ market, index }: ScheduleMarketCard
   const { displayStatus } = market;
   const { t, marketLabel } = useI18n();
 
+  const isResulted = displayStatus === 'resulted';
+  const seed = hashString(market.code);
+  const isBullish = seededRandom(seed)() > 0.45;
+
   const borderClass =
     displayStatus === 'upcoming'
       ? 'border-dashed border-[var(--border)]'
@@ -62,11 +70,15 @@ export default function ScheduleMarketCard({ market, index }: ScheduleMarketCard
 
   const cardOpacity = displayStatus === 'upcoming' ? 'opacity-60' : '';
 
+  const flashClass = isResulted
+    ? (isBullish ? 'animate-[flash-green_2s_ease-out]' : 'animate-[flash-red_2s_ease-out]')
+    : '';
+
   return (
     <div
-      className={`panel p-3 md:p-4 transition-all relative overflow-hidden border ${borderClass} ${cardOpacity}`}
+      className={`panel p-3 md:p-4 transition-all relative overflow-hidden border ${borderClass} ${cardOpacity} ${flashClass}`}
       style={{
-        animation: 'fadeInUp 0.3s ease-out backwards',
+        animation: `fadeInUp 0.3s ease-out backwards${isResulted ? `, ${isBullish ? 'flash-green' : 'flash-red'} 2s ease-out` : ''}`,
         animationDelay: `${index * 0.03}s`,
       }}
     >
@@ -74,9 +86,12 @@ export default function ScheduleMarketCard({ market, index }: ScheduleMarketCard
       {displayStatus === 'open' && (
         <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[var(--brand-primary)]" />
       )}
-      {displayStatus === 'resulted' && (
+      {isResulted && (
         <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[var(--accent-green)]" />
       )}
+
+      {/* Background sparkline for resulted cards */}
+      {isResulted && <BackgroundSparkline market={market.code} />}
 
       <div className="relative z-10">
         <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
@@ -97,7 +112,7 @@ export default function ScheduleMarketCard({ market, index }: ScheduleMarketCard
                     LIVE
                   </span>
                 )}
-                {displayStatus === 'resulted' && (
+                {isResulted && (
                   <span className="inline-flex items-center gap-1 bg-[var(--accent-green)]/10 text-[var(--accent-green)] border border-[var(--accent-green)]/20 text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0">
                     {t('status.resulted')}
                   </span>
@@ -131,14 +146,15 @@ export default function ScheduleMarketCard({ market, index }: ScheduleMarketCard
                 {formatTimeLeft(market.announceTimeISO)}
               </div>
             )}
-            {displayStatus === 'resulted' && market.winningNumber && (
-              <div className="flex items-center gap-2">
+            {isResulted && market.winningNumber && (
+              <div className="flex items-center gap-2 md:justify-end">
                 <NumberRenderer number={market.winningNumber} size="sm" />
                 {market.winningNumber2d && (
                   <span className="text-[var(--text-muted)] font-[family-name:var(--font-mono)] text-xs">
                     {market.winningNumber2d}
                   </span>
                 )}
+                <ChangeIndicator market={market.code} />
               </div>
             )}
           </div>
@@ -151,6 +167,13 @@ export default function ScheduleMarketCard({ market, index }: ScheduleMarketCard
               className="h-full rounded-full bg-[var(--brand-primary)] transition-all duration-1000"
               style={{ width: `${getProgressPercent(market.openTimeISO, market.closeTimeISO)}%` }}
             />
+          </div>
+        )}
+
+        {/* Compact volume bars for resulted cards */}
+        {isResulted && (
+          <div className="mt-2">
+            <VolumeBars market={market.code} compact />
           </div>
         )}
       </div>

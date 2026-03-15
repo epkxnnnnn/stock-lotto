@@ -64,6 +64,13 @@ body {
   100% { background-color: transparent; }
 }
 
+/* Verify glow animation */
+@keyframes verify-glow {
+  0% { filter: drop-shadow(0 0 0); transform: scale(0.8); opacity: 0; }
+  50% { filter: drop-shadow(0 0 8px currentColor); transform: scale(1.1); }
+  100% { filter: drop-shadow(0 0 4px currentColor); transform: scale(1); opacity: 1; }
+}
+
 /* Blink for live countdown */
 @keyframes blink-colon {
   0%, 100% { opacity: 1; }

@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { StockResult } from '@/types';
 import FlagIcon from './FlagIcon';
 import CountdownTimer from './CountdownTimer';
 import TradingViewChart from './TradingViewChart';
 import { useI18n } from '@/lib/i18n';
 import { getStockSymbol, stockSymbols } from '@/lib/stock-symbols';
+import BackgroundSparkline from './trading/BackgroundSparkline';
+import VolumeBars from './trading/VolumeBars';
 
 interface HeroSplitProps {
   nextRound: StockResult | undefined;
@@ -23,53 +25,6 @@ function formatTime(iso: string): string {
 }
 
 // --- Countdown card sub-components ---
-
-// Seeded PRNG
-function seededRng(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 1103515245 + 12345) & 0x7fffffff;
-    return s / 0x7fffffff;
-  };
-}
-
-function hashStr(str: string): number {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = ((h << 5) - h) + str.charCodeAt(i);
-    h |= 0;
-  }
-  return Math.abs(h);
-}
-
-// Animated SVG sparkline behind the countdown
-function BackgroundSparkline({ market }: { market: string }) {
-  const path = useMemo(() => {
-    const seed = hashStr(market + 'bg');
-    const rng = seededRng(seed);
-    const points: number[] = [];
-    const count = 40;
-    let y = 50;
-    for (let i = 0; i < count; i++) {
-      y += (rng() - 0.48) * 12;
-      y = Math.max(15, Math.min(85, y));
-      points.push(y);
-    }
-    return points.map((py, i) => `${i === 0 ? 'M' : 'L'}${(i / (count - 1)) * 100} ${py}`).join(' ');
-  }, [market]);
-
-  return (
-    <svg
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-      className="absolute inset-0 w-full h-full pointer-events-none z-0"
-      style={{ opacity: 0.06 }}
-    >
-      <path d={path} fill="none" stroke="var(--brand-primary)" strokeWidth="0.8" />
-      <path d={`${path} L100 100 L0 100 Z`} fill="var(--brand-primary)" opacity="0.3" />
-    </svg>
-  );
-}
 
 // Circular progress ring around the flag icon
 function SessionProgressRing({ targetTime, children }: { targetTime: string; children: ReactNode }) {
@@ -147,38 +102,6 @@ function SessionProgressBar({ targetTime }: { targetTime: string }) {
             boxShadow: '0 0 6px var(--brand-primary)',
           }}
         />
-      </div>
-    </div>
-  );
-}
-
-// Animated volume bars at the bottom
-function VolumeBars({ market }: { market: string }) {
-  const bars = useMemo(() => {
-    const seed = hashStr(market + 'vol');
-    const rng = seededRng(seed);
-    return Array.from({ length: 24 }, () => 0.15 + rng() * 0.85);
-  }, [market]);
-
-  return (
-    <div className="px-4 pb-3 pt-1">
-      <div className="flex items-end gap-[2px] h-6">
-        {bars.map((h, i) => (
-          <div
-            key={i}
-            className="flex-1 rounded-t-[1px] transition-all duration-500"
-            style={{
-              height: `${h * 100}%`,
-              background: h > 0.6 ? 'var(--brand-primary)' : 'var(--border)',
-              opacity: 0.5 + h * 0.5,
-              animationDelay: `${i * 0.05}s`,
-            }}
-          />
-        ))}
-      </div>
-      <div className="flex items-center justify-between mt-1">
-        <span className="text-[8px] text-[var(--text-muted)] font-[family-name:var(--font-mono)] uppercase tracking-wider">Vol</span>
-        <span className="text-[8px] text-[var(--text-muted)] font-[family-name:var(--font-mono)]">24 bars</span>
       </div>
     </div>
   );
