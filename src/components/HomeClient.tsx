@@ -7,7 +7,8 @@ import { useI18n } from '@/lib/i18n';
 import TickerTape from './TickerTape';
 import HeroSplit from './HeroSplit';
 import MarketOverviewTable from './MarketOverviewTable';
-import SettledMarketsTable from './SettledMarketsTable';
+import TodayStats from './TodayStats';
+import GlobalIndicesWidget from './GlobalIndicesWidget';
 
 interface HomeClientProps {
   initialResults: StockResult[];
@@ -123,9 +124,6 @@ export default function HomeClient({ initialResults, initialYesterdayResults, br
   const displayResults = showYesterday ? yesterdayResults : results;
   const sectionLabel = showYesterday ? t('section.yesterdayResults') : t('section.todayResults');
 
-  // Latest 5 results for the bottom-right table (SettledMarketsTable filters internally)
-  const latestResults = displayResults.slice(-5);
-
   return (
     <>
       <TickerTape results={displayResults} />
@@ -140,16 +138,8 @@ export default function HomeClient({ initialResults, initialYesterdayResults, br
         <MarketOverviewTable results={displayResults} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <SettledMarketsTable
-            results={displayResults}
-            title={t('section.settledMarkets')}
-            variant="settled"
-          />
-          <SettledMarketsTable
-            results={latestResults}
-            title={t('section.latestResults')}
-            variant="latest"
-          />
+          <TodayStats results={displayResults} />
+          <GlobalIndicesWidget />
         </div>
       </div>
     </>

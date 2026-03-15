@@ -98,6 +98,16 @@ const translations: Record<string, { th: string; lo: string }> = {
   'verify.tampered': { th: 'ไม่ผ่าน — Hash ไม่ตรงกัน', lo: 'ບໍ່ຜ່ານ — Hash ບໍ່ກົງກັນ' },
   'verify.verifyCommand': { th: 'คำสั่งตรวจสอบด้วย OpenSSL:', lo: 'ຄຳສັ່ງກວດສອບດ້ວຍ OpenSSL:' },
 
+  // Stats
+  'stats.title': { th: 'สถิติวันนี้', lo: 'ສະຖິຕິມື້ນີ້' },
+  'stats.settled': { th: 'ออกผลแล้ว', lo: 'ອອກຜົນແລ້ວ' },
+  'stats.pending': { th: 'รอผล', lo: 'ລໍຖ້າຜົນ' },
+  'stats.total': { th: 'ทั้งหมด', lo: 'ທັງໝົດ' },
+  'stats.digitFrequency': { th: 'ความถี่ตัวเลข (0-9)', lo: 'ຄວາມຖີ່ຕົວເລກ (0-9)' },
+  'stats.hotNumbers': { th: 'เลข 2 ตัว ยอดนิยม', lo: 'ເລກ 2 ໂຕ ຍອດນິຍົມ' },
+  'stats.waitingForResults': { th: 'รอผลหวยรอบแรกของวัน', lo: 'ລໍຖ້າຜົນຫວຍຮອບທຳອິດ' },
+  'stats.globalIndices': { th: 'ดัชนีตลาดโลก', lo: 'ດັດສະນີຕະຫຼາດໂລກ' },
+
   // Common
   'common.loading': { th: 'กำลังโหลด...', lo: 'ກຳລັງໂຫລດ...' },
   'common.error': { th: 'เกิดข้อผิดพลาด', lo: 'ເກີດຂໍ້ຜິດພາດ' },
