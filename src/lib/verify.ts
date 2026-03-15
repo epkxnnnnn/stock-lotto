@@ -52,16 +52,30 @@ export function deriveNumbersFromSeed(
 
 /**
  * Derive winning numbers from a real stock index price (weekdays).
- * Takes index value like "38423.57", returns:
- * 3-digit = last 3 digits of integer part ("423")
- * 2-digit = last 2 digits of integer part ("23")
+ * Uses HMAC-SHA256 so numbers are NOT predictable from the price alone.
+ * Key = HMAC_SECRET from env, message = "stock-ref-v1|{source}|{market}|{roundDate}|{price}"
+ * Bytes 0-1 → uint16 mod 1000 → 3-digit
+ * Bytes 2-3 → uint16 mod 100 → 2-digit
+ *
+ * Different source (vvip vs platinum) → different numbers from the same price.
+ * Without HMAC_SECRET, customers cannot reverse-engineer results from stock prices.
  */
-export function deriveNumbersFromPrice(indexPrice: string): { threeDigit: string; twoDigit: string } {
-  const integerPart = indexPrice.split('.')[0].replace(/[^0-9]/g, '');
-  const padded = integerPart.padStart(3, '0');
+export function deriveNumbersFromPrice(
+  indexPrice: string,
+  source: string,
+  market: string,
+  roundDate: string,
+): { threeDigit: string; twoDigit: string } {
+  const secret = process.env.HMAC_SECRET;
+  if (!secret) {
+    throw new Error('HMAC_SECRET is required for stock price derivation');
+  }
 
-  const threeDigit = padded.slice(-3);
-  const twoDigit = padded.slice(-2);
+  const message = `stock-ref-v1|${source}|${market}|${roundDate}|${indexPrice}`;
+  const hmac = crypto.createHmac('sha256', secret).update(message).digest();
+
+  const threeDigit = (hmac.readUInt16BE(0) % 1000).toString().padStart(3, '0');
+  const twoDigit = (hmac.readUInt16BE(2) % 100).toString().padStart(2, '0');
 
   return { threeDigit, twoDigit };
 }

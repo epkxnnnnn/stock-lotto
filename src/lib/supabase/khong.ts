@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 /**
- * Supabase client for the Khong DB (source of historical results)
- * Uses service role key for read access to lotteries + lottery_metas
+ * Supabase client for the Khong DB — used for writing results to Khong DB.
+ * Stock-lotto is the source; pushes winning numbers to Khong's lotteries + lottery_metas tables.
  */
 export function createKhongClient() {
   return createClient(

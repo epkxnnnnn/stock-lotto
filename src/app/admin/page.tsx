@@ -27,8 +27,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [seeding, setSeeding] = useState(false);
   const [savingMarkets, setSavingMarkets] = useState<Set<string>>(new Set());
-  const [syncing, setSyncing] = useState(false);
-  const [syncResult, setSyncResult] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [generateResult, setGenerateResult] = useState<string | null>(null);
 
@@ -80,28 +78,6 @@ export default function AdminPage() {
     setSeeding(false);
   };
 
-  const handleSyncKhong = async () => {
-    setSyncing(true);
-    setSyncResult(null);
-    try {
-      const res = await fetch('/api/admin/sync-khong', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ days: 7 }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setSyncResult(`Synced ${data.synced} results, seeded ${data.seeded} rows, skipped ${data.skipped}`);
-        await fetchResults();
-      } else {
-        setSyncResult(`Error: ${data.error}`);
-      }
-    } catch {
-      setSyncResult('Sync request failed');
-    }
-    setSyncing(false);
-  };
-
   const handleGenerate = async () => {
     setGenerating(true);
     setGenerateResult(null);
@@ -113,7 +89,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setGenerateResult(`Generated ${data.generated} results${data.failed > 0 ? ` (${data.failed} failed)` : ''}`);
+        setGenerateResult(`Generated ${data.generated} results, ${data.pushed ?? 0} pushed to Khong${data.failed > 0 ? ` (${data.failed} failed)` : ''}`);
         await fetchResults();
       } else {
         setGenerateResult(`Error: ${data.error}`);
@@ -209,13 +185,6 @@ export default function AdminPage() {
           {loading ? 'Loading...' : 'Refresh'}
         </button>
         <button
-          onClick={handleSyncKhong}
-          disabled={syncing}
-          className="px-4 py-2 rounded-lg text-xs font-semibold bg-[var(--bg-card)] border border-emerald-800 text-emerald-400 hover:bg-emerald-900/30 hover:border-emerald-600 transition-all disabled:opacity-50"
-        >
-          {syncing ? 'Syncing...' : 'Sync from Khong (7 days)'}
-        </button>
-        <button
           onClick={handleGenerate}
           disabled={generating}
           className="px-4 py-2 rounded-lg text-xs font-semibold bg-[var(--bg-card)] border border-amber-700 text-amber-400 hover:bg-amber-900/30 hover:border-amber-500 transition-all disabled:opacity-50"
@@ -223,26 +192,15 @@ export default function AdminPage() {
           {generating ? 'Generating...' : `Generate (${activeBrand.toUpperCase()})`}
         </button>
       </div>
-      {(syncResult || generateResult) && (
+      {generateResult && (
         <div className="flex flex-col gap-2 mb-4">
-          {syncResult && (
-            <div className={`px-4 py-2 rounded-lg text-xs ${
-              syncResult.startsWith('Error') || syncResult.includes('failed')
-                ? 'bg-red-900/20 border border-red-800 text-red-400'
-                : 'bg-emerald-900/20 border border-emerald-800 text-emerald-400'
-            }`}>
-              {syncResult}
-            </div>
-          )}
-          {generateResult && (
-            <div className={`px-4 py-2 rounded-lg text-xs ${
-              generateResult.startsWith('Error') || generateResult.includes('failed')
-                ? 'bg-red-900/20 border border-red-800 text-red-400'
-                : 'bg-amber-900/20 border border-amber-800 text-amber-400'
-            }`}>
-              {generateResult}
-            </div>
-          )}
+          <div className={`px-4 py-2 rounded-lg text-xs ${
+            generateResult.startsWith('Error') || generateResult.includes('failed')
+              ? 'bg-red-900/20 border border-red-800 text-red-400'
+              : 'bg-amber-900/20 border border-amber-800 text-amber-400'
+          }`}>
+            {generateResult}
+          </div>
         </div>
       )}
 
