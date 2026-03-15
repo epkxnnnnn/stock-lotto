@@ -62,8 +62,7 @@ function getMarketToKhongMap(): Map<string, KhongMapping> {
  * Push a single result to Khong DB.
  * 1. Look up khongTemplateId from our market code + source
  * 2. Find today's lottery row in Khong: lotteries table where ltp = templateId AND close is within today (Bangkok time)
- * 3. Update lottery status = 3 (resulted)
- * 4. Upsert lottery_metas row: { lottery_id, top, bottom, meta_key: null }
+ * 3. Write lottery_metas (top/bottom) — Khong's process-draws handles status transitions + winner processing
  * Never throws — all errors caught and returned.
  */
 export async function pushResultToKhong(params: PushParams): Promise<PushResult> {
@@ -99,17 +98,9 @@ export async function pushResultToKhong(params: PushParams): Promise<PushResult>
       };
     }
 
-    // Update lottery status to 3 (resulted)
-    const { error: statusError } = await khong
-      .from('lotteries')
-      .update({ status: 3 })
-      .eq('id', lottery.id);
-
-    if (statusError) {
-      return { success: false, error: `Failed to update lottery status: ${statusError.message}` };
-    }
-
-    // Insert or update lottery_metas with winning numbers
+    // Write results to lottery_metas only — do NOT change lottery status.
+    // Khong's process-draws cron handles status transitions (SELLING → CALCULATING → COMPLETED)
+    // and winner processing. We just pre-populate the results so Khong skips Yahoo fetch.
     // Cannot use upsert because meta_key is NULL and PostgreSQL treats NULL ≠ NULL for conflict detection
     const { data: existingMeta } = await khong
       .from('lottery_metas')
