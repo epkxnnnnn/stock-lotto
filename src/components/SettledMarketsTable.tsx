@@ -1,9 +1,11 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import type { StockResult } from '@/types';
 import FlagIcon from './FlagIcon';
 import NumberRenderer from './NumberRenderer';
 import { useI18n } from '@/lib/i18n';
+import { marketCodeToSlug } from '@/lib/market-utils';
 
 interface SettledMarketsTableProps {
   results: StockResult[];
@@ -21,6 +23,7 @@ function formatTime(iso: string): string {
 
 export default function SettledMarketsTable({ results, title, variant = 'settled' }: SettledMarketsTableProps) {
   const { t, marketLabel } = useI18n();
+  const router = useRouter();
 
   const filtered = variant === 'settled'
     ? results.filter((r) => r.status === 'resulted')
@@ -44,7 +47,11 @@ export default function SettledMarketsTable({ results, title, variant = 'settled
         {filtered.map((r) => (
           <div
             key={r.market}
-            className="px-4 py-2.5 flex items-center justify-between hover:bg-[var(--bg-card-hover)] transition-colors"
+            className="px-4 py-2.5 flex items-center justify-between hover:bg-[var(--bg-card-hover)] transition-colors cursor-pointer"
+            onClick={() => router.push(`/market/${marketCodeToSlug(r.market)}`)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/market/${marketCodeToSlug(r.market)}`); } }}
+            role="link"
+            tabIndex={0}
           >
             <div className="flex items-center gap-2">
               <FlagIcon emoji={r.flagEmoji} size={22} className="ring-0" />

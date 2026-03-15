@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import type { StockResult } from '@/types';
 import FlagIcon from './FlagIcon';
 import NumberRenderer from './NumberRenderer';
 import { useI18n } from '@/lib/i18n';
+import { marketCodeToSlug } from '@/lib/market-utils';
 
 interface MarketOverviewTableProps {
   results: StockResult[];
@@ -176,11 +178,12 @@ function ChangeIndicator({ market }: { market: string }) {
 }
 
 // Row with green/red flash on mount for resulted rows
-function TableRow({ r, index, t, marketLabel }: {
+function TableRow({ r, index, t, marketLabel, onClick }: {
   r: StockResult;
   index: number;
   t: (key: string) => string;
   marketLabel: (th: string, lo?: string) => string;
+  onClick: () => void;
 }) {
   const isResulted = !!r.winningNumber;
   const seed = hashString(r.market);
@@ -191,8 +194,12 @@ function TableRow({ r, index, t, marketLabel }: {
 
   return (
     <tr
-      className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-card-hover)] transition-colors ${flashClass}`}
+      className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-card-hover)] transition-colors cursor-pointer ${flashClass}`}
       style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'backwards' }}
+      onClick={onClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
+      role="link"
+      tabIndex={0}
     >
       {/* Asset */}
       <td className="py-2.5 px-4">
@@ -281,6 +288,7 @@ function LiveClock() {
 
 export default function MarketOverviewTable({ results }: MarketOverviewTableProps) {
   const { t, marketLabel } = useI18n();
+  const router = useRouter();
 
   const resultedCount = results.filter((r) => r.winningNumber).length;
 
@@ -328,7 +336,7 @@ export default function MarketOverviewTable({ results }: MarketOverviewTableProp
           </thead>
           <tbody>
             {results.map((r, i) => (
-              <TableRow key={r.market} r={r} index={i} t={t} marketLabel={marketLabel} />
+              <TableRow key={r.market} r={r} index={i} t={t} marketLabel={marketLabel} onClick={() => router.push(`/market/${marketCodeToSlug(r.market)}`)} />
             ))}
           </tbody>
         </table>
@@ -344,7 +352,11 @@ export default function MarketOverviewTable({ results }: MarketOverviewTableProp
           return (
             <div
               key={r.market}
-              className={`px-4 py-3 flex items-center justify-between ${isResulted ? (isBullish ? 'animate-[flash-green_2s_ease-out]' : 'animate-[flash-red_2s_ease-out]') : ''}`}
+              className={`px-4 py-3 flex items-center justify-between cursor-pointer ${isResulted ? (isBullish ? 'animate-[flash-green_2s_ease-out]' : 'animate-[flash-red_2s_ease-out]') : ''}`}
+              onClick={() => router.push(`/market/${marketCodeToSlug(r.market)}`)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/market/${marketCodeToSlug(r.market)}`); } }}
+              role="link"
+              tabIndex={0}
             >
               <div className="flex items-center gap-2.5">
                 <FlagIcon emoji={r.flagEmoji} size={28} className="ring-0" />

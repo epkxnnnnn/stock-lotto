@@ -1,9 +1,18 @@
 import type { MetadataRoute } from 'next';
 import { getBrandConfig } from '@/lib/theme/config';
+import { getMarkets } from '@/lib/theme/rounds';
+import { marketCodeToSlug } from '@/lib/market-utils';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const config = getBrandConfig();
   const baseUrl = `https://${config.domain}`;
+
+  const marketPages: MetadataRoute.Sitemap = getMarkets(config.brand).map((m) => ({
+    url: `${baseUrl}/market/${marketCodeToSlug(m.code)}`,
+    lastModified: new Date(),
+    changeFrequency: 'hourly',
+    priority: 0.8,
+  }));
 
   return [
     {
@@ -18,6 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'hourly',
       priority: 0.9,
     },
+    ...marketPages,
     {
       url: `${baseUrl}/schedule`,
       lastModified: new Date(),

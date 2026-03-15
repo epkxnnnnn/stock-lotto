@@ -108,6 +108,20 @@ const translations: Record<string, { th: string; lo: string }> = {
   'stats.waitingForResults': { th: 'รอผลหวยรอบแรกของวัน', lo: 'ລໍຖ້າຜົນຫວຍຮອບທຳອິດ' },
   'stats.globalIndices': { th: 'ดัชนีตลาดโลก', lo: 'ດັດສະນີຕະຫຼາດໂລກ' },
 
+  // Market page
+  'market.todayResult': { th: 'ผลวันนี้', lo: 'ຜົນມື້ນີ້' },
+  'market.history': { th: 'ผลย้อนหลัง 30 วัน', lo: 'ຜົນຍ້ອນຫຼັງ 30 ວັນ' },
+  'market.exchange': { th: 'ตลาดหลักทรัพย์', lo: 'ຕະຫຼາດຫຼັກຊັບ' },
+  'market.country': { th: 'ประเทศ', lo: 'ປະເທດ' },
+  'market.tradingHours': { th: 'เวลาซื้อขาย', lo: 'ເວລາຊື້ຂາຍ' },
+  'market.description': { th: 'รายละเอียด', lo: 'ລາຍລະອຽດ' },
+  'market.closesAt': { th: 'ปิดรับเวลา', lo: 'ປິດຮັບເວລາ' },
+  'market.date': { th: 'วันที่', lo: 'ວັນທີ' },
+  'market.method': { th: 'วิธี', lo: 'ວິທີ' },
+  'market.time': { th: 'เวลา', lo: 'ເວລາ' },
+  'market.noResult': { th: 'ยังไม่ออกผล', lo: 'ຍັງບໍ່ອອກຜົນ' },
+  'market.backToHome': { th: 'กลับหน้าแรก', lo: 'ກັບໜ້າຫຼັກ' },
+
   // Common
   'common.loading': { th: 'กำลังโหลด...', lo: 'ກຳລັງໂຫລດ...' },
   'common.error': { th: 'เกิดข้อผิดพลาด', lo: 'ເກີດຂໍ້ຜິດພາດ' },
