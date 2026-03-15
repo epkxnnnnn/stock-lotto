@@ -2,9 +2,29 @@ import type { Metadata } from 'next';
 import { getBrandConfig } from '@/lib/theme/config';
 import { getMarkets } from '@/lib/theme/rounds';
 import AboutClient from './AboutClient';
+import JsonLd from '@/components/JsonLd';
 
 const aboutConfig = getBrandConfig();
 const aboutRoundCount = aboutConfig.brand === 'platinum' ? 15 : 13;
+
+const aboutFaq = [
+  {
+    question: 'หวยหุ้นคืออะไร?',
+    answer: `หวยหุ้นคือการนำตัวเลขจากดัชนีตลาดหุ้นต่างประเทศมาเป็นผลรางวัล ${aboutConfig.siteNameTh} ให้บริการผลหวยหุ้น ${aboutRoundCount} รอบต่อวัน ครอบคลุมตลาดหุ้นชั้นนำทั่วโลก`,
+  },
+  {
+    question: 'ผลหวยหุ้นออกกี่โมง?',
+    answer: `ผลหวยหุ้นออกตลอดทั้งวัน ${aboutRoundCount} รอบ เริ่มตั้งแต่ช่วงเช้าจนถึงค่ำ ดูตารางเวลาออกผลทั้งหมดได้ที่หน้าตารางเวลา`,
+  },
+  {
+    question: 'วิธีตรวจผลหวยหุ้น?',
+    answer: `เข้าเว็บไซต์ ${aboutConfig.domain} ผลหวยหุ้นจะอัพเดทอัตโนมัติแบบเรียลไทม์ทันทีที่ผลออก ไม่ต้องรีเฟรชหน้า`,
+  },
+  {
+    question: `${aboutConfig.siteNameTh} มีตลาดอะไรบ้าง?`,
+    answer: `${aboutConfig.siteNameTh} ครอบคลุม ${aboutRoundCount} ตลาดหุ้น ได้แก่ ดาวโจนส์ นิเคอิ ฮั่งเส็ง จีน เกาหลี ไต้หวัน สิงคโปร์ เวียดนาม และอื่นๆ`,
+  },
+];
 
 export const metadata: Metadata = {
   title: `เกี่ยวกับ ${aboutConfig.siteNameTh} — แหล่งผลหวยหุ้นออนไลน์`,
@@ -22,10 +42,19 @@ export default function AboutPage() {
   const uniqueFlags = new Set(markets.map(m => m.flagEmoji));
 
   return (
-    <AboutClient
-      config={aboutConfig}
-      markets={markets}
-      uniqueFlagCount={uniqueFlags.size}
-    />
+    <>
+      <JsonLd
+        breadcrumbs={[
+          { name: 'หน้าแรก', href: '/' },
+          { name: 'เกี่ยวกับเรา', href: '/about' },
+        ]}
+        faq={aboutFaq}
+      />
+      <AboutClient
+        config={aboutConfig}
+        markets={markets}
+        uniqueFlagCount={uniqueFlags.size}
+      />
+    </>
   );
 }

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     description: `ตารางเวลาออกผลหวยหุ้น ${scheduleConfig.siteNameTh} ครบ ${scheduleRoundCount} รอบ อัพเดทเรียลไทม์`,
     url: '/schedule',
   },
+  alternates: { canonical: '/schedule' },
 };
 
 function getSession(closeTime: string): 'morning' | 'afternoon' | 'evening' {

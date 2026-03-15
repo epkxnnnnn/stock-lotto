@@ -5,6 +5,7 @@ import { getThemeCSSString } from '@/lib/theme/colors';
 import Providers from '@/components/Providers';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import JsonLd from '@/components/JsonLd';
 import './globals.css';
 
 const inter = Inter({
@@ -52,8 +53,8 @@ const siteDescription =
     : `${config.siteNameTh} ผลหวยหุ้น VVIP ${roundCount} รอบต่อวัน ตรวจผลหวยหุ้นออนไลน์ อัพเดทเรียลไทม์ ครบทุกตลาดหุ้นทั่วโลก`;
 const siteKeywords =
   brand === 'platinum'
-    ? 'หวยหุ้นแพลทินัม, ผลหวยหุ้น, หวยหุ้นออนไลน์, Stock Platinums, ตรวจหวยหุ้น, หวยหุ้นวันนี้, ผลหวยหุ้นย้อนหลัง'
-    : 'หวยหุ้น VVIP, ผลหวยหุ้น, หวยหุ้นออนไลน์, Stock VVIP, ตรวจหวยหุ้น, หวยหุ้นวันนี้, ผลหวยหุ้นย้อนหลัง';
+    ? 'หวยหุ้นแพลทินัม, ผลหวยหุ้น, หวยหุ้นออนไลน์, Stock Platinums, ตรวจหวยหุ้น, หวยหุ้นวันนี้, ผลหวยหุ้นย้อนหลัง, ผลหวยหุ้นวันนี้, หวยหุ้นต่างประเทศ, หวยหุ้นดาวโจนส์, หวยหุ้นนิเคอิ, หวยหุ้นฮั่งเส็ง, หวยหุ้นจีน, ตรวจผลหวยหุ้นวันนี้, หวยหุ้นเรียลไทม์, ຫວຍຫຸ້ນ, ຜົນຫວຍຫຸ້ນ, ຫວຍຫຸ້ນອອນລາຍ, ກວດຫວຍຫຸ້ນ, ຫວຍຫຸ້ນວັນນີ້'
+    : 'หวยหุ้น VVIP, ผลหวยหุ้น, หวยหุ้นออนไลน์, Stock VVIP, ตรวจหวยหุ้น, หวยหุ้นวันนี้, ผลหวยหุ้นย้อนหลัง, ผลหวยหุ้นวันนี้, หวยหุ้นต่างประเทศ, หวยหุ้นดาวโจนส์, หวยหุ้นนิเคอิ, หวยหุ้นฮั่งเส็ง, หวยหุ้นจีน, ตรวจผลหวยหุ้นวันนี้, หวยหุ้นเรียลไทม์, ຫວຍຫຸ້ນ, ຜົນຫວຍຫຸ້ນ, ຫວຍຫຸ້ນອອນລາຍ, ກວດຫວຍຫຸ້ນ, ຫວຍຫຸ້ນວັນນີ້';
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${config.domain}`),
@@ -105,6 +106,7 @@ export default function RootLayout({
             __html: themeStyleContent,
           }}
         />
+        <JsonLd breadcrumbs={[{ name: 'หน้าแรก', href: '/' }]} />
       </head>
       <body
         className={`${inter.variable} ${notoSansThai.variable} ${notoSansLao.variable} ${jetBrainsMono.variable} font-[family-name:var(--font-sans)] antialiased`}
