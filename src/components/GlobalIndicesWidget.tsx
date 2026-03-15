@@ -3,17 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 
-const INDICES = [
-  { symbol: 'TVC:DJI', name: 'Dow Jones' },
-  { symbol: 'TVC:NI225', name: 'Nikkei 225' },
-  { symbol: 'TVC:HSI', name: 'Hang Seng' },
-  { symbol: 'TVC:SHCOMP', name: 'Shanghai' },
-  { symbol: 'TVC:KOSPI', name: 'KOSPI' },
-  { symbol: 'INDEX:TAIEX', name: 'TAIEX' },
-  { symbol: 'TVC:STI', name: 'STI' },
-  { symbol: 'HOSE:VNINDEX', name: 'VN-Index' },
-];
-
 export default function GlobalIndicesWidget() {
   const widgetRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
@@ -22,32 +11,59 @@ export default function GlobalIndicesWidget() {
   useEffect(() => {
     if (!widgetRef.current) return;
 
-    // Remove any previous script children
     const existing = widgetRef.current.querySelector('script');
     if (existing) existing.remove();
 
     const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js';
     script.async = true;
     script.onload = () => setLoaded(true);
     script.textContent = JSON.stringify({
+      colorTheme: 'dark',
+      dateRange: '1D',
+      showChart: true,
+      locale: 'th_TH',
+      largeChartUrl: '',
+      isTransparent: true,
+      showSymbolLogo: true,
+      showFloatingTooltip: true,
       width: '100%',
       height: '100%',
-      symbolsGroups: [
+      tabs: [
         {
-          name: 'Indices',
-          originalName: 'Indices',
-          symbols: INDICES.map((idx) => ({
-            name: idx.symbol,
-            displayName: idx.name,
-          })),
+          title: 'Indices',
+          symbols: [
+            { s: 'FOREXCOM:DJI', d: 'Dow Jones' },
+            { s: 'FOREXCOM:NI225', d: 'Nikkei 225' },
+            { s: 'HSI:HSI', d: 'Hang Seng' },
+            { s: 'SSE:000001', d: 'Shanghai' },
+            { s: 'KRX:KOSPI', d: 'KOSPI' },
+            { s: 'TWSE:TAIEX', d: 'TAIEX' },
+            { s: 'SGX:ES3', d: 'STI (ES3)' },
+            { s: 'HOSE:VNINDEX', d: 'VN-Index' },
+          ],
+        },
+        {
+          title: 'Forex',
+          symbols: [
+            { s: 'FX:EURUSD', d: 'EUR/USD' },
+            { s: 'FX:USDJPY', d: 'USD/JPY' },
+            { s: 'FX:GBPUSD', d: 'GBP/USD' },
+            { s: 'FX:USDTHB', d: 'USD/THB' },
+            { s: 'FX:USDCNH', d: 'USD/CNH' },
+            { s: 'FX:USDKRW', d: 'USD/KRW' },
+          ],
+        },
+        {
+          title: 'Crypto',
+          symbols: [
+            { s: 'BINANCE:BTCUSDT', d: 'Bitcoin' },
+            { s: 'BINANCE:ETHUSDT', d: 'Ethereum' },
+            { s: 'BINANCE:SOLUSDT', d: 'Solana' },
+            { s: 'BINANCE:XRPUSDT', d: 'XRP' },
+          ],
         },
       ],
-      showSymbolLogo: true,
-      isTransparent: true,
-      colorTheme: 'dark',
-      locale: 'th_TH',
-      backgroundColor: 'rgba(0,0,0,0)',
     });
 
     widgetRef.current.appendChild(script);
@@ -70,9 +86,8 @@ export default function GlobalIndicesWidget() {
         </div>
       </div>
 
-      {/* TradingView Widget */}
-      <div className="flex-1 relative min-h-[300px]">
-        {/* Loading skeleton */}
+      {/* TradingView Market Overview Widget */}
+      <div className="flex-1 relative min-h-[420px]">
         {!loaded && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <div className="space-y-3 w-full px-4">
