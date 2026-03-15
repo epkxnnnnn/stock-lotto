@@ -7,6 +7,8 @@ import FlagIcon from '@/components/FlagIcon';
 import NumberRenderer from '@/components/NumberRenderer';
 import MiniSparkline from '@/components/trading/MiniSparkline';
 import ChangeIndicator from '@/components/trading/ChangeIndicator';
+import TradingViewMarketQuotes from '@/components/TradingViewMarketQuotes';
+import TradingViewChart from '@/components/TradingViewChart';
 
 interface MarketOption {
   code: string;
@@ -92,12 +94,15 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
         {t('verify.title')}
       </h1>
 
-      {/* How it works */}
+      {/* Live Market Quotes Widget */}
+      <TradingViewMarketQuotes />
+
+      {/* How it works — 2 cards only */}
       <div className="panel p-4 space-y-3">
         <h2 className="text-sm font-semibold text-[var(--text-primary)]">
           {t('verify.howItWorks')}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3 relative overflow-hidden">
             <svg className="absolute top-1 right-1 opacity-10" width="48" height="16" viewBox="0 0 48 16">
               <polyline points="0,12 8,10 16,6 24,8 32,3 40,5 48,2" fill="none" stroke="var(--accent-green)" strokeWidth="1.5" />
@@ -109,19 +114,6 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
             </div>
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
               {t('verify.weekdayDesc')}
-            </p>
-          </div>
-          <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3 relative overflow-hidden">
-            <svg className="absolute top-1 right-1 opacity-10" width="48" height="16" viewBox="0 0 48 16">
-              <polyline points="0,4 8,6 16,3 24,8 32,5 40,10 48,7" fill="none" stroke="var(--brand-primary)" strokeWidth="1.5" />
-            </svg>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-emerald-400 text-xs font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
-                {t('verify.weekend')}
-              </span>
-            </div>
-            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-              {t('verify.weekendDesc')}
             </p>
           </div>
           <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded p-3 relative overflow-hidden">
@@ -138,6 +130,11 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* TradingView Chart — always visible, default XAUUSD */}
+      <div className="panel p-3">
+        <TradingViewChart symbol="OANDA:XAUUSD" height={400} />
       </div>
 
       {/* Lookup Form */}
@@ -230,7 +227,7 @@ export default function VerifyClient({ brand, markets }: VerifyClientProps) {
             <p className="text-sm text-[var(--text-muted)]">{t('status.pending')}</p>
           )}
 
-          {/* TradingView Chart */}
+          {/* Result-specific TradingView Chart */}
           {result.stockSymbol && result.status === 'resulted' && (
             <div>
               <div className="text-[10px] text-[var(--text-muted)] mb-1.5">
