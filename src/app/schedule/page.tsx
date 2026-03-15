@@ -10,13 +10,25 @@ import JsonLd from '@/components/JsonLd';
 const scheduleConfig = getBrandConfig();
 const scheduleRoundCount = scheduleConfig.brand === 'platinum' ? 15 : 13;
 
+const scheduleOgImage = `/images/og-${scheduleConfig.brand}.png`;
+const scheduleDescription = `ตารางเวลาออกผลหวยหุ้น ${scheduleConfig.siteNameTh} ครบ ${scheduleRoundCount} รอบ พร้อมนับถอยหลังเรียลไทม์ ดาวโจนส์ นิเคอิ ฮั่งเส็ง จีน เกาหลี ไต้หวัน สิงคโปร์ เวียดนาม`;
+
 export const metadata: Metadata = {
   title: `ตารางเวลาหวยหุ้น ${scheduleConfig.siteNameTh} ${scheduleRoundCount} รอบ | ${scheduleConfig.siteName}`,
-  description: `ตารางเวลาออกผลหวยหุ้น ${scheduleConfig.siteNameTh} ครบ ${scheduleRoundCount} รอบ พร้อมนับถอยหลังเรียลไทม์ ดาวโจนส์ นิเคอิ ฮั่งเส็ง จีน เกาหลี ไต้หวัน สิงคโปร์ เวียดนาม`,
+  description: scheduleDescription,
   openGraph: {
     title: `ตารางเวลาหวยหุ้น ${scheduleConfig.siteNameTh} — นับถอยหลังเรียลไทม์`,
     description: `ตารางเวลาออกผลหวยหุ้น ${scheduleConfig.siteNameTh} ครบ ${scheduleRoundCount} รอบ อัพเดทเรียลไทม์`,
     url: '/schedule',
+    type: 'website',
+    locale: 'th_TH',
+    images: [{ url: scheduleOgImage, width: 1200, height: 630, alt: `ตารางเวลาหวยหุ้น ${scheduleConfig.siteNameTh}` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `ตารางเวลาหวยหุ้น ${scheduleConfig.siteNameTh} — นับถอยหลังเรียลไทม์`,
+    description: scheduleDescription,
+    images: [scheduleOgImage],
   },
   alternates: { canonical: '/schedule' },
 };

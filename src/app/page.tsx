@@ -8,14 +8,27 @@ import { createClient } from '@supabase/supabase-js';
 const homeConfig = getBrandConfig();
 const homeRoundCount = homeConfig.brand === 'platinum' ? 15 : 13;
 
+const homeOgImage = `/images/og-${homeConfig.brand}.png`;
+const homeDescription = `ตรวจผลหวยหุ้นวันนี้ ${homeConfig.siteNameTh} ${homeRoundCount} รอบ ดาวโจนส์ นิเคอิ ฮั่งเส็ง จีน เกาหลี ไต้หวัน สิงคโปร์ เวียดนาม อัพเดทเรียลไทม์ทุกรอบ ฟรี`;
+
 export const metadata: Metadata = {
   title: `${homeConfig.siteNameTh} — ผลหวยหุ้นวันนี้ ${homeRoundCount} รอบ อัพเดทเรียลไทม์ | ${homeConfig.siteName}`,
-  description: `ตรวจผลหวยหุ้นวันนี้ ${homeConfig.siteNameTh} ${homeRoundCount} รอบ ดาวโจนส์ นิเคอิ ฮั่งเส็ง จีน เกาหลี ไต้หวัน สิงคโปร์ เวียดนาม อัพเดทเรียลไทม์ทุกรอบ ฟรี`,
+  description: homeDescription,
   openGraph: {
     title: `${homeConfig.siteNameTh} — ผลหวยหุ้นวันนี้ อัพเดทเรียลไทม์`,
     description: `ตรวจผลหวยหุ้นวันนี้ ${homeConfig.siteNameTh} ครบ ${homeRoundCount} รอบ อัพเดทผลทุกตลาดหุ้นทั่วโลก`,
     url: '/',
+    type: 'website',
+    locale: 'th_TH',
+    images: [{ url: homeOgImage, width: 1200, height: 630, alt: `${homeConfig.siteNameTh} ผลหวยหุ้นวันนี้` }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${homeConfig.siteNameTh} — ผลหวยหุ้นวันนี้ อัพเดทเรียลไทม์`,
+    description: homeDescription,
+    images: [homeOgImage],
+  },
+  alternates: { canonical: '/' },
 };
 
 function mapRow(r: Record<string, unknown>): StockResult {

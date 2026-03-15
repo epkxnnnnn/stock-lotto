@@ -6,13 +6,25 @@ import JsonLd from '@/components/JsonLd';
 
 const config = getBrandConfig();
 
+const verifyOgImage = `/images/og-${config.brand}.png`;
+const verifyDescription = `ตรวจสอบความถูกต้องผลหวยหุ้น ${config.siteNameTh} ด้วยระบบ Provably Fair และ Hash ยืนยัน อ้างอิงดัชนีตลาดหุ้นจริง ป้องกันการแก้ไขข้อมูลย้อนหลัง`;
+
 export const metadata: Metadata = {
   title: `ตรวจสอบผลหวยหุ้น — Provably Fair | ${config.siteName}`,
-  description: `ตรวจสอบความถูกต้องผลหวยหุ้น ${config.siteNameTh} ด้วยระบบ Provably Fair และ Hash ยืนยัน อ้างอิงดัชนีตลาดหุ้นจริง ป้องกันการแก้ไขข้อมูลย้อนหลัง`,
+  description: verifyDescription,
   openGraph: {
     title: `ตรวจสอบผลหวยหุ้น — ${config.siteNameTh}`,
     description: `ระบบตรวจสอบความถูกต้องผลหวยหุ้น ${config.siteNameTh} Provably Fair + Hash ยืนยัน`,
     url: '/verify',
+    type: 'website',
+    locale: 'th_TH',
+    images: [{ url: verifyOgImage, width: 1200, height: 630, alt: `ตรวจสอบผลหวยหุ้น ${config.siteNameTh}` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `ตรวจสอบผลหวยหุ้น — ${config.siteNameTh}`,
+    description: verifyDescription,
+    images: [verifyOgImage],
   },
   alternates: { canonical: '/verify' },
 };

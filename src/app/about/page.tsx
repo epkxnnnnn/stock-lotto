@@ -26,13 +26,25 @@ const aboutFaq = [
   },
 ];
 
+const aboutOgImage = `/images/og-${aboutConfig.brand}.png`;
+const aboutDescription = `เกี่ยวกับ ${aboutConfig.siteNameTh} แหล่งรวมผลหวยหุ้นออนไลน์ ${aboutRoundCount} รอบต่อวัน ครบทุกตลาดหุ้นทั่วโลก อัพเดทเรียลไทม์ น่าเชื่อถือ`;
+
 export const metadata: Metadata = {
   title: `เกี่ยวกับ ${aboutConfig.siteNameTh} — แหล่งผลหวยหุ้นออนไลน์`,
-  description: `เกี่ยวกับ ${aboutConfig.siteNameTh} แหล่งรวมผลหวยหุ้นออนไลน์ ${aboutRoundCount} รอบต่อวัน ครบทุกตลาดหุ้นทั่วโลก อัพเดทเรียลไทม์ น่าเชื่อถือ`,
+  description: aboutDescription,
   openGraph: {
     title: `เกี่ยวกับ ${aboutConfig.siteNameTh} — แหล่งผลหวยหุ้นออนไลน์`,
     description: `แหล่งรวมผลหวยหุ้นออนไลน์ ${aboutRoundCount} รอบต่อวัน ครบทุกตลาดหุ้นทั่วโลก`,
     url: '/about',
+    type: 'website',
+    locale: 'th_TH',
+    images: [{ url: aboutOgImage, width: 1200, height: 630, alt: `เกี่ยวกับ ${aboutConfig.siteNameTh}` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `เกี่ยวกับ ${aboutConfig.siteNameTh} — แหล่งผลหวยหุ้นออนไลน์`,
+    description: aboutDescription,
+    images: [aboutOgImage],
   },
   alternates: { canonical: '/about' },
 };
