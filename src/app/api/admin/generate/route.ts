@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { computeResultHash, deriveNumbersFromSeed } from '@/lib/verify';
+import { computeResultHash, deriveNumbersFromSeed, deriveNumbersFromPrice } from '@/lib/verify';
+import { fetchStockPrice, getYahooSymbol } from '@/lib/stock-price';
 import crypto from 'crypto';
 
 /**
@@ -14,6 +15,7 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json().catch(() => ({}));
   const source = (body.source as string) || undefined;
+  const useStockPrice = body.useStockPrice === true;
   const date = (body.date as string) || new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
 
   // Find markets past close time that have no results yet
@@ -50,9 +52,39 @@ export async function POST(request: NextRequest) {
   const results: { market: string; source: string; top: string; bottom: string }[] = [];
 
   for (const row of pending) {
-    // Provably Fair: generate seed, derive numbers deterministically via HMAC-SHA256
-    const seed = crypto.randomBytes(32).toString('hex');
-    const { threeDigit: top, twoDigit: bottom } = deriveNumbersFromSeed(seed, row.source, row.market, date);
+    let top: string;
+    let bottom: string;
+    let generationMethod: string;
+    let seed: string | null = null;
+    let referencePrice: string | null = null;
+
+    if (useStockPrice) {
+      // Try stock price derivation first
+      const yahooSymbol = getYahooSymbol(row.market);
+      const priceData = yahooSymbol ? await fetchStockPrice(yahooSymbol) : null;
+
+      if (priceData) {
+        const derived = deriveNumbersFromPrice(priceData.price);
+        top = derived.threeDigit;
+        bottom = derived.twoDigit;
+        generationMethod = 'stock_ref';
+        referencePrice = priceData.price;
+      } else {
+        // Fallback to Provably Fair if stock price fetch fails
+        seed = crypto.randomBytes(32).toString('hex');
+        const derived = deriveNumbersFromSeed(seed, row.source, row.market, date);
+        top = derived.threeDigit;
+        bottom = derived.twoDigit;
+        generationMethod = 'auto';
+      }
+    } else {
+      // Provably Fair: generate seed, derive numbers deterministically via HMAC-SHA256
+      seed = crypto.randomBytes(32).toString('hex');
+      const derived = deriveNumbersFromSeed(seed, row.source, row.market, date);
+      top = derived.threeDigit;
+      bottom = derived.twoDigit;
+      generationMethod = 'auto';
+    }
 
     const resultTime = new Date().toISOString();
     const resultHash = computeResultHash({
@@ -62,6 +94,7 @@ export async function POST(request: NextRequest) {
       winningNumber: top,
       winningNumber2d: bottom,
       resultTime,
+      referencePrice,
       seed,
     });
 
@@ -72,8 +105,9 @@ export async function POST(request: NextRequest) {
         winning_number_2d: bottom,
         status: 'resulted',
         result_time: resultTime,
-        generation_method: 'auto',
+        generation_method: generationMethod,
         generation_seed: seed,
+        reference_price: referencePrice,
         result_hash: resultHash,
       })
       .eq('id', row.id);

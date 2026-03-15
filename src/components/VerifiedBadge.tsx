@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 interface VerifiedBadgeProps {
   hash: string;
@@ -9,6 +9,7 @@ interface VerifiedBadgeProps {
 
 export default function VerifiedBadge({ hash, method }: VerifiedBadgeProps) {
   const [showFull, setShowFull] = useState(false);
+  const [openAbove, setOpenAbove] = useState(true);
   const ref = useRef<HTMLSpanElement>(null);
   const shortHash = hash.slice(0, 8);
 
@@ -24,6 +25,14 @@ export default function VerifiedBadge({ hash, method }: VerifiedBadgeProps) {
     ? 'text-emerald-400'
     : 'text-[var(--text-muted)]';
 
+  const handleToggle = useCallback(() => {
+    if (!showFull && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setOpenAbove(rect.top >= 80);
+    }
+    setShowFull(prev => !prev);
+  }, [showFull]);
+
   useEffect(() => {
     if (!showFull) return;
     function handleClick(e: MouseEvent) {
@@ -35,11 +44,15 @@ export default function VerifiedBadge({ hash, method }: VerifiedBadgeProps) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showFull]);
 
+  const tooltipPosition = openAbove
+    ? 'bottom-full mb-1'
+    : 'top-full mt-1';
+
   return (
     <span className="relative inline-flex items-center gap-1" ref={ref}>
       <button
         type="button"
-        onClick={() => setShowFull(!showFull)}
+        onClick={handleToggle}
         aria-expanded={showFull}
         className="inline-flex items-center gap-0.5 text-[9px] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors font-[family-name:var(--font-mono)] cursor-pointer"
         title={`${methodLabel} — ${hash}`}
@@ -51,9 +64,9 @@ export default function VerifiedBadge({ hash, method }: VerifiedBadgeProps) {
       </button>
 
       {showFull && (
-        <span className="absolute bottom-full left-0 mb-1 z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 shadow-lg whitespace-nowrap">
-          <span className={`block text-[9px] font-medium ${methodColor} mb-0.5`}>{methodLabel}</span>
-          <span className="block text-[9px] text-[var(--text-secondary)] font-[family-name:var(--font-mono)] select-all">{hash}</span>
+        <span className={`absolute ${tooltipPosition} left-0 z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded px-2 py-1.5 shadow-lg max-w-[90vw]`}>
+          <span className={`block text-[9px] font-medium ${methodColor} mb-0.5 whitespace-nowrap`}>{methodLabel}</span>
+          <span className="block text-[9px] text-[var(--text-secondary)] font-[family-name:var(--font-mono)] select-all break-all">{hash}</span>
         </span>
       )}
     </span>

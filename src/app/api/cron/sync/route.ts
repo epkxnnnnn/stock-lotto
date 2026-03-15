@@ -3,7 +3,8 @@ import type { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createKhongClient } from '@/lib/supabase/khong';
 import { buildKhongToMarketMap, getAllTemplateIds } from '@/lib/sync/khong-mapping';
-import { computeResultHash } from '@/lib/verify';
+import { computeResultHash, deriveNumbersFromPrice } from '@/lib/verify';
+import { fetchStockPrice, getYahooSymbol, isWeekday } from '@/lib/stock-price';
 import { vvipMarkets } from '@/config/markets-vvip';
 import { platinumMarkets } from '@/config/markets-platinum';
 
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
   const now = new Date();
   const today = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
 
-  const stats = { seeded: 0, closed: 0, synced: 0, errors: 0 };
+  const stats = { seeded: 0, closed: 0, synced: 0, stockRef: 0, errors: 0 };
 
   // Step 1: Seed today's schedule if not already done
   {
@@ -168,6 +169,57 @@ export async function GET(request: NextRequest) {
           if (!updateError) stats.synced++;
           else stats.errors++;
         }
+      }
+    }
+  }
+
+  // Step 4: Stock price derivation fallback for weekday closed markets without results
+  if (isWeekday(today)) {
+    const { data: unresolvedMarkets } = await supabase
+      .from('stock_results')
+      .select('id, source, market, close_time')
+      .eq('round_date', today)
+      .eq('status', 'closed')
+      .is('winning_number', null)
+      .lte('close_time', now.toISOString());
+
+    if (unresolvedMarkets && unresolvedMarkets.length > 0) {
+      for (const row of unresolvedMarkets) {
+        const yahooSymbol = getYahooSymbol(row.market);
+        if (!yahooSymbol) continue;
+
+        const priceData = await fetchStockPrice(yahooSymbol);
+        if (!priceData) continue;
+
+        const { threeDigit: top, twoDigit: bottom } = deriveNumbersFromPrice(priceData.price);
+        const resultTime = now.toISOString();
+        const resultHash = computeResultHash({
+          source: row.source,
+          market: row.market,
+          roundDate: today,
+          winningNumber: top,
+          winningNumber2d: bottom,
+          resultTime,
+          referencePrice: priceData.price,
+        });
+
+        const { error: updateError } = await supabase
+          .from('stock_results')
+          .update({
+            winning_number: top,
+            winning_number_2d: bottom,
+            status: 'resulted',
+            result_time: resultTime,
+            generation_method: 'stock_ref',
+            reference_price: priceData.price,
+            result_hash: resultHash,
+            updated_at: now.toISOString(),
+          })
+          .eq('id', row.id)
+          .is('winning_number', null);
+
+        if (!updateError) stats.stockRef++;
+        else stats.errors++;
       }
     }
   }
