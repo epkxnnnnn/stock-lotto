@@ -9,12 +9,14 @@ interface TradingViewChartProps {
   hideSideToolbar?: boolean;
 }
 
+const DEFAULT_SYMBOL = 'OANDA:XAUUSD';
+
 export default function TradingViewChart({ symbol, interval = '15', height = 420, hideSideToolbar = false }: TradingViewChartProps) {
   const [loaded, setLoaded] = useState(false);
 
   const iframeUrl = useMemo(() => {
     const params = new URLSearchParams({
-      symbol,
+      symbol: DEFAULT_SYMBOL,
       interval,
       hide_top_toolbar: '0',
       hide_legend: '0',
@@ -26,14 +28,14 @@ export default function TradingViewChart({ symbol, interval = '15', height = 420
       timezone: 'Asia/Bangkok',
       backgroundColor: 'rgba(11,14,20,1)',
       gridColor: 'rgba(42,46,57,0.3)',
-      allow_symbol_change: '0',
+      allow_symbol_change: '1',
       save_image: '0',
       details: '1',
       calendar: '0',
       locale: 'th_TH',
     });
     return `https://s.tradingview.com/widgetembed/?${params.toString()}`;
-  }, [symbol, interval, hideSideToolbar]);
+  }, [interval, hideSideToolbar]);
 
   return (
     <div className="relative w-full rounded overflow-hidden" style={{ height }} key={symbol}>
