@@ -80,11 +80,15 @@ export default function ScheduleMarketCard({ market, index }: ScheduleMarketCard
 
   return (
     <div
-      className={`panel p-3 md:p-4 transition-all relative overflow-hidden border ${borderClass} ${cardOpacity} ${flashClass}`}
+      className={`panel p-3 md:p-4 transition-all relative overflow-hidden border cursor-pointer ${borderClass} ${cardOpacity} ${flashClass}`}
       style={{
         animation: `fadeInUp 0.3s ease-out backwards${isResulted ? `, ${isBullish ? 'flash-green' : 'flash-red'} 2s ease-out` : ''}`,
         animationDelay: `${index * 0.03}s`,
       }}
+      onClick={() => router.push(`/market/${slug}`)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/market/${slug}`); } }}
+      role="link"
+      tabIndex={0}
     >
       {/* Left accent for open */}
       {displayStatus === 'open' && (

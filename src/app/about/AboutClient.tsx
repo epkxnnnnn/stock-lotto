@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 import FlagIcon from '@/components/FlagIcon';
 import LiveClock from '@/components/trading/LiveClock';
 import MiniSparkline from '@/components/trading/MiniSparkline';
+import { marketCodeToSlug } from '@/lib/market-utils';
 import type { BrandConfig, Market } from '@/types';
 
 interface AboutClientProps {
@@ -60,6 +62,7 @@ function CountUpStat({ target, suffix, label }: { target: number; suffix?: strin
 
 export default function AboutClient({ config, markets, uniqueFlagCount }: AboutClientProps) {
   const { t, marketLabel } = useI18n();
+  const router = useRouter();
 
   return (
     <div className="py-6">
@@ -110,7 +113,11 @@ export default function AboutClient({ config, markets, uniqueFlagCount }: AboutC
           {markets.map((market) => (
             <div
               key={market.code}
-              className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[var(--bg-card-hover)] transition-colors"
+              className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[var(--bg-card-hover)] transition-colors cursor-pointer"
+              onClick={() => router.push(`/market/${marketCodeToSlug(market.code)}`)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/market/${marketCodeToSlug(market.code)}`); } }}
+              role="link"
+              tabIndex={0}
             >
               <FlagIcon emoji={market.flagEmoji} size={24} className="ring-0" />
               <div className="flex-1 min-w-0">
