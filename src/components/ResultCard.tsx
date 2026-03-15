@@ -1,11 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import type { StockResult } from '@/types';
 import NumberRenderer from './NumberRenderer';
 import FlagIcon from './FlagIcon';
 import VerifiedBadge from './VerifiedBadge';
 import { useI18n } from '@/lib/i18n';
 import { getStockSymbol } from '@/lib/stock-symbols';
+import { marketCodeToSlug } from '@/lib/market-utils';
 
 interface ResultCardProps {
   result: StockResult;
@@ -13,18 +15,24 @@ interface ResultCardProps {
 
 export default function ResultCard({ result }: ResultCardProps) {
   const { t, marketLabel } = useI18n();
+  const router = useRouter();
   const isWaiting = !result.winningNumber;
   const closeDate = new Date(result.closeTime);
   const formattedClose = closeDate.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Bangkok' });
   const stockInfo = getStockSymbol(result.market);
+  const slug = marketCodeToSlug(result.market);
 
   return (
     <div
-      className={`bg-[var(--bg-card)] border rounded px-3.5 py-3 md:px-4 md:py-3.5 flex items-center gap-2.5 md:gap-3 transition-colors hover:bg-[var(--bg-card-hover)] ${
+      className={`bg-[var(--bg-card)] border rounded px-3.5 py-3 md:px-4 md:py-3.5 flex items-center gap-2.5 md:gap-3 transition-colors hover:bg-[var(--bg-card-hover)] cursor-pointer ${
         isWaiting
           ? 'border-dashed border-[var(--border)]'
           : 'border-[var(--border)]'
       }`}
+      onClick={() => router.push(`/market/${slug}`)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/market/${slug}`); } }}
+      role="link"
+      tabIndex={0}
     >
       <FlagIcon emoji={result.flagEmoji} size={28} className="ring-0" />
 

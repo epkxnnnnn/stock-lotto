@@ -107,11 +107,17 @@ body {
   100% { transform: scale(2.2); opacity: 0; }
 }
 
+/* Bottom nav safe area for notched phones */
+.bottom-nav-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* Container utility */
 .container-main {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px;
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
   position: relative;
   z-index: 1;
 }
@@ -119,6 +125,7 @@ body {
 @media (min-width: 768px) {
   .container-main {
     padding: 0 20px;
+    padding-bottom: 0;
   }
 }
 

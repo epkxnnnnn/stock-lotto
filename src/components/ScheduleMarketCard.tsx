@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import NumberRenderer from './NumberRenderer';
 import FlagIcon from './FlagIcon';
 import { useI18n } from '@/lib/i18n';
@@ -7,6 +8,7 @@ import { seededRandom, hashString } from '@/lib/utils/seeded-random';
 import BackgroundSparkline from './trading/BackgroundSparkline';
 import ChangeIndicator from './trading/ChangeIndicator';
 import VolumeBars from './trading/VolumeBars';
+import { marketCodeToSlug } from '@/lib/market-utils';
 
 export type DisplayStatus = 'upcoming' | 'open' | 'closed' | 'resulted';
 
@@ -56,6 +58,8 @@ function getProgressPercent(openISO: string, closeISO: string): number {
 export default function ScheduleMarketCard({ market, index }: ScheduleMarketCardProps) {
   const { displayStatus } = market;
   const { t, marketLabel } = useI18n();
+  const router = useRouter();
+  const slug = marketCodeToSlug(market.code);
 
   const isResulted = displayStatus === 'resulted';
   const seed = hashString(market.code);

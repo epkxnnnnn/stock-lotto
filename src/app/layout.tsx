@@ -5,6 +5,7 @@ import { getThemeCSSString } from '@/lib/theme/colors';
 import Providers from '@/components/Providers';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import BottomNav from '@/components/BottomNav';
 import JsonLd from '@/components/JsonLd';
 import './globals.css';
 
@@ -115,6 +116,7 @@ export default function RootLayout({
           <Header />
           <main className="container-main">{children}</main>
           <Footer />
+          <BottomNav />
         </Providers>
       </body>
     </html>

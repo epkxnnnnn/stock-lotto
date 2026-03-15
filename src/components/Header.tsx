@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getBrandConfig } from '@/lib/theme/config';
@@ -19,7 +18,6 @@ const navItems = [
 
 export default function Header() {
   const { lang, setLang, t } = useI18n();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <header className="h-14 md:h-16 bg-[var(--bg-card)] border-b border-[var(--border)] sticky top-0 z-50">
@@ -59,60 +57,30 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Right: Language Toggle + Mobile Hamburger */}
-        <div className="flex items-center gap-3">
-          {/* Language Toggle */}
-          <div className="flex items-center rounded overflow-hidden border border-[var(--border)] text-xs">
-            <button
-              onClick={() => setLang('th')}
-              className={`px-2.5 py-1 font-medium transition-colors ${
-                lang === 'th'
-                  ? 'bg-[var(--brand-primary)] text-[var(--bg-primary)]'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              TH
-            </button>
-            <button
-              onClick={() => setLang('lo')}
-              className={`px-2.5 py-1 font-medium transition-colors ${
-                lang === 'lo'
-                  ? 'bg-[var(--brand-primary)] text-[var(--bg-primary)]'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
-            >
-              LA
-            </button>
-          </div>
-
-          {/* Mobile Hamburger */}
+        {/* Language Toggle */}
+        <div className="flex items-center rounded overflow-hidden border border-[var(--border)] text-xs">
           <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden flex flex-col gap-1 p-1"
-            aria-label="Toggle menu"
+            onClick={() => setLang('th')}
+            className={`px-2.5 py-1 font-medium transition-colors ${
+              lang === 'th'
+                ? 'bg-[var(--brand-primary)] text-[var(--bg-primary)]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
           >
-            <span className={`block w-5 h-0.5 bg-[var(--text-secondary)] transition-transform ${mobileOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-[var(--text-secondary)] transition-opacity ${mobileOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-[var(--text-secondary)] transition-transform ${mobileOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+            TH
+          </button>
+          <button
+            onClick={() => setLang('lo')}
+            className={`px-2.5 py-1 font-medium transition-colors ${
+              lang === 'lo'
+                ? 'bg-[var(--brand-primary)] text-[var(--bg-primary)]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            LA
           </button>
         </div>
       </div>
-
-      {/* Mobile Nav Dropdown */}
-      {mobileOpen && (
-        <nav className="md:hidden bg-[var(--bg-card)] border-b border-[var(--border)] px-4 pb-3">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className="block text-[var(--text-secondary)] text-sm font-medium py-2 px-2 rounded transition-colors hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]"
-            >
-              {t(item.key)}
-            </Link>
-          ))}
-        </nav>
-      )}
     </header>
   );
 }

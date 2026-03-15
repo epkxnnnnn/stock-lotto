@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import type { StockResult } from '@/types';
 import ResultCard from './ResultCard';
 import FlagIcon from './FlagIcon';
@@ -10,6 +11,7 @@ import { getStockSymbol } from '@/lib/stock-symbols';
 import { seededRandom, hashString } from '@/lib/utils/seeded-random';
 import MiniSparkline from './trading/MiniSparkline';
 import ChangeIndicator from './trading/ChangeIndicator';
+import { marketCodeToSlug } from '@/lib/market-utils';
 
 interface ResultsGridProps {
   results: StockResult[];
@@ -50,6 +52,7 @@ function StockInfoCell({ result }: { result: StockResult }) {
 
 export default function ResultsGrid({ results }: ResultsGridProps) {
   const { t, marketLabel } = useI18n();
+  const router = useRouter();
 
   return (
     <>
@@ -81,8 +84,12 @@ export default function ResultsGrid({ results }: ResultsGridProps) {
               return (
                 <tr
                   key={r.id}
-                  className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-card-hover)] transition-colors ${flashClass}`}
+                  className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-card-hover)] transition-colors cursor-pointer ${flashClass}`}
                   style={{ animationDelay: `${i * 0.1}s`, animationFillMode: 'backwards' }}
+                  onClick={() => router.push(`/market/${marketCodeToSlug(r.market)}`)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/market/${marketCodeToSlug(r.market)}`); } }}
+                  role="link"
+                  tabIndex={0}
                 >
                   <td className="py-2.5 px-4">
                     <div className="flex items-center gap-2.5">
