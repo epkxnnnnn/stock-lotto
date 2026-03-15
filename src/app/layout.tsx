@@ -1,48 +1,45 @@
 import type { Metadata } from 'next';
-import { Prompt, Orbitron, Bebas_Neue } from 'next/font/google';
+import { Inter, Noto_Sans_Thai, Noto_Sans_Lao, JetBrains_Mono } from 'next/font/google';
 import { getBrandConfig } from '@/lib/theme/config';
 import { getThemeCSSString } from '@/lib/theme/colors';
+import Providers from '@/components/Providers';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import './globals.css';
 
-const prompt = Prompt({
-  subsets: ['thai', 'latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const notoSansThai = Noto_Sans_Thai({
+  subsets: ['thai'],
+  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-thai',
   display: 'swap',
 });
 
-const orbitron = Orbitron({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
-  variable: '--font-mono',
+const notoSansLao = Noto_Sans_Lao({
+  subsets: ['lao'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-lao',
   display: 'swap',
 });
 
-const bebasNeue = Bebas_Neue({
+const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: '400',
-  variable: '--font-heading',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-mono',
   display: 'swap',
 });
 
 const config = getBrandConfig();
 const brand = config.brand;
 
-const bodyTexture =
-  brand === 'platinum'
-    ? `radial-gradient(ellipse at 30% 0%, rgba(126, 184, 224, 0.06) 0%, transparent 50%),
-       radial-gradient(ellipse at 70% 100%, rgba(168, 180, 196, 0.04) 0%, transparent 50%),
-       repeating-linear-gradient(90deg, transparent, transparent 120px, rgba(168, 180, 196, 0.015) 120px, rgba(168, 180, 196, 0.015) 121px)`
-    : `radial-gradient(ellipse at 20% 0%, rgba(212, 168, 41, 0.08) 0%, transparent 50%),
-       radial-gradient(ellipse at 80% 100%, rgba(212, 168, 41, 0.05) 0%, transparent 50%),
-       repeating-linear-gradient(0deg, transparent, transparent 100px, rgba(212, 168, 41, 0.02) 100px, rgba(212, 168, 41, 0.02) 101px)`;
-
 // CSS variables are built from hardcoded theme constants only (no user input)
 const themeStyleContent = `:root {
     ${getThemeCSSString(brand)}
-    --body-texture: ${bodyTexture};
   }`;
 
 const faviconPath = brand === 'platinum' ? '/images/logo-platinum.png' : '/images/logo-vvip.png';
@@ -91,7 +88,7 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true },
   },
-  other: { 'theme-color': brand === 'platinum' ? '#a8b4c4' : '#d4a829' },
+  other: { 'theme-color': brand === 'platinum' ? '#00c2c7' : '#d4a829' },
 };
 
 export default function RootLayout({
@@ -99,6 +96,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // themeStyleContent is built from hardcoded constants only - safe for inline style
   return (
     <html lang="th">
       <head>
@@ -109,11 +107,13 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${prompt.variable} ${orbitron.variable} ${bebasNeue.variable} font-[family-name:var(--font-thai)] antialiased`}
+        className={`${inter.variable} ${notoSansThai.variable} ${notoSansLao.variable} ${jetBrainsMono.variable} font-[family-name:var(--font-sans)] antialiased`}
       >
-        <Header />
-        <main className="container-main">{children}</main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="container-main">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

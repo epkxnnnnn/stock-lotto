@@ -1,57 +1,118 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getBrandConfig } from '@/lib/theme/config';
+import { useI18n } from '@/lib/i18n';
+
+const config = getBrandConfig();
+
+const navItems = [
+  { href: '/', key: 'nav.home' },
+  { href: '/results', key: 'nav.results' },
+  { href: '/schedule', key: 'nav.schedule' },
+  { href: '/rates', key: 'nav.rates' },
+  { href: '/agent', key: 'nav.agent' },
+  { href: '/about', key: 'nav.about' },
+] as const;
 
 export default function Header() {
-  const config = getBrandConfig();
+  const { lang, setLang, t } = useI18n();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="py-5 border-b border-[var(--border)] relative">
-      <div className="absolute bottom-[-1px] left-1/2 -translate-x-1/2 w-[200px] h-[2px] bg-gradient-to-r from-transparent via-[var(--brand-primary)] to-transparent" />
-      <div className="max-w-[1200px] mx-auto px-5">
-        <div className="flex items-center justify-between max-md:flex-col max-md:gap-4">
-          <Link href="/" className="flex items-center gap-3.5 no-underline">
-            <div className="w-10 h-10 md:w-[52px] md:h-[52px] rounded-xl flex items-center justify-center shadow-[0_4px_20px_var(--brand-glow)] overflow-hidden relative">
-              <Image
-                src={config.brand === 'vvip' ? '/images/logo-vvip.png' : '/images/logo-platinum.png'}
-                alt={config.siteName}
-                width={40}
-                height={40}
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div>
-              <h1 className="font-heading text-xl md:text-[28px] tracking-[3px] leading-none gradient-text">
-                {config.siteName.toUpperCase()}
-              </h1>
-              <span className="text-[11px] text-[var(--text-secondary)] tracking-[2px] md:tracking-[4px] uppercase">
-                {config.siteNameTh}
-              </span>
-            </div>
-          </Link>
-          <nav className="flex gap-1 md:gap-2 flex-wrap max-md:justify-center">
-            <Link href="/" className="text-[var(--text-secondary)] text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
-              หน้าแรก
+    <header className="h-14 md:h-16 bg-[var(--bg-card)] border-b border-[var(--border)] sticky top-0 z-50">
+      <div className="max-w-[1400px] mx-auto px-4 h-full flex items-center justify-between">
+        {/* Logo + Brand */}
+        <Link href="/" className="flex items-center gap-2.5 no-underline shrink-0">
+          <div className="w-8 h-8 rounded overflow-hidden">
+            <Image
+              src={config.brand === 'vvip' ? '/images/logo-vvip.png' : '/images/logo-platinum.png'}
+              alt={config.siteName}
+              width={32}
+              height={32}
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-sm md:text-base font-semibold text-[var(--text-primary)] tracking-wide">
+              {config.siteName.toUpperCase()}
+            </span>
+            <span className="text-[10px] text-[var(--text-muted)] hidden sm:inline">
+              {config.siteNameTh}
+            </span>
+          </div>
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-1">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-[var(--text-secondary)] text-[13px] font-medium px-3 py-1.5 rounded transition-colors hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]"
+            >
+              {t(item.key)}
             </Link>
-            <Link href="/results" className="text-[var(--text-secondary)] text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
-              ผลหวย
-            </Link>
-            <Link href="/schedule" className="text-[var(--text-secondary)] text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
-              ตารางเวลา
-            </Link>
-            <Link href="/rates" className="text-[var(--text-secondary)] text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
-              อัตราจ่าย
-            </Link>
-            <Link href="/agent" className="text-[var(--text-secondary)] text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
-              สมัครตัวแทน
-            </Link>
-            <Link href="/about" className="text-[var(--text-secondary)] text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-all hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]">
-              เกี่ยวกับ
-            </Link>
-          </nav>
+          ))}
+        </nav>
+
+        {/* Right: Language Toggle + Mobile Hamburger */}
+        <div className="flex items-center gap-3">
+          {/* Language Toggle */}
+          <div className="flex items-center rounded overflow-hidden border border-[var(--border)] text-xs">
+            <button
+              onClick={() => setLang('th')}
+              className={`px-2.5 py-1 font-medium transition-colors ${
+                lang === 'th'
+                  ? 'bg-[var(--brand-primary)] text-[var(--bg-primary)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              TH
+            </button>
+            <button
+              onClick={() => setLang('lo')}
+              className={`px-2.5 py-1 font-medium transition-colors ${
+                lang === 'lo'
+                  ? 'bg-[var(--brand-primary)] text-[var(--bg-primary)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              LA
+            </button>
+          </div>
+
+          {/* Mobile Hamburger */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden flex flex-col gap-1 p-1"
+            aria-label="Toggle menu"
+          >
+            <span className={`block w-5 h-0.5 bg-[var(--text-secondary)] transition-transform ${mobileOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-[var(--text-secondary)] transition-opacity ${mobileOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-5 h-0.5 bg-[var(--text-secondary)] transition-transform ${mobileOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+          </button>
         </div>
       </div>
+
+      {/* Mobile Nav Dropdown */}
+      {mobileOpen && (
+        <nav className="md:hidden bg-[var(--bg-card)] border-b border-[var(--border)] px-4 pb-3">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className="block text-[var(--text-secondary)] text-sm font-medium py-2 px-2 rounded transition-colors hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/[0.08]"
+            >
+              {t(item.key)}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

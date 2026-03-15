@@ -2,33 +2,17 @@
 
 import { useState } from 'react';
 import { getBrandConfig } from '@/lib/theme/config';
-import SectionTitle from '@/components/SectionTitle';
+import { useI18n } from '@/lib/i18n';
 import ApiAccessModal from '@/components/ApiAccessModal';
 
 const config = getBrandConfig();
 const roundCount = config.brand === 'platinum' ? 15 : 13;
 
 const benefits = [
-  {
-    icon: '\u{1F4B0}',
-    title: 'ค่าคอมมิชชั่นสูง',
-    description: 'รับค่าตอบแทนจากการแนะนำสมาชิกทุกคน อัตราค่าคอมมิชชั่นที่คุ้มค่า',
-  },
-  {
-    icon: '\u26A1',
-    title: 'ผลหวยเรียลไทม์',
-    description: 'เข้าถึงผลหวยหุ้นแบบเรียลไทม์ทันทีที่ออกผล เพื่อให้บริการลูกค้าได้อย่างรวดเร็ว',
-  },
-  {
-    icon: '\u{1F4DE}',
-    title: 'ซัพพอร์ตตลอด 24 ชม.',
-    description: 'ทีมงานคอยช่วยเหลือตลอดเวลา พร้อมแก้ไขปัญหาให้ทันที',
-  },
-  {
-    icon: '\u{1F4E2}',
-    title: 'สื่อการตลาด',
-    description: 'รับสื่อการตลาดสำเร็จรูป แบนเนอร์ ลิงก์แนะนำ พร้อมใช้งานทันที',
-  },
+  { title: 'ค่าคอมมิชชั่นสูง', description: 'รับค่าตอบแทนจากการแนะนำสมาชิกทุกคน' },
+  { title: 'ผลหวยเรียลไทม์', description: 'เข้าถึงผลหวยหุ้นแบบเรียลไทม์ทันที' },
+  { title: 'ซัพพอร์ตตลอด 24 ชม.', description: 'ทีมงานคอยช่วยเหลือตลอดเวลา' },
+  { title: 'สื่อการตลาด', description: 'แบนเนอร์ ลิงก์แนะนำ พร้อมใช้งานทันที' },
 ];
 
 const steps = [
@@ -46,7 +30,10 @@ const referralOptions = [
   { value: 'other', label: 'อื่นๆ' },
 ];
 
+const inputClass = 'w-full bg-[var(--bg-input)] border border-[var(--border)] rounded px-3.5 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors';
+
 export default function AgentPage() {
+  const { t } = useI18n();
   const [form, setForm] = useState({
     full_name: '',
     phone: '',
@@ -91,145 +78,83 @@ export default function AgentPage() {
   };
 
   return (
-    <div className="py-10">
-      <SectionTitle>{'\u{1F91D}'} สมัครตัวแทน {config.siteName}</SectionTitle>
+    <div className="py-6">
+      <h1 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+        {t('agent.title')} {config.siteName}
+      </h1>
 
       {/* Hero */}
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-5 md:p-8 mb-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--brand-primary)]/5 to-transparent pointer-events-none" />
-        <div className="relative">
-          <h3 className="font-heading text-2xl tracking-[3px] gradient-text mb-4">
-            โปรแกรมตัวแทน {config.siteNameTh}
-          </h3>
-          <div className="space-y-3 text-sm text-[var(--text-secondary)] leading-relaxed max-w-2xl">
-            <p>
-              ร่วมเป็นตัวแทนของ {config.siteNameTh} สร้างรายได้จากการแนะนำสมาชิก
-              พร้อมรับสิทธิพิเศษมากมาย สนับสนุนเต็มที่ตลอดการทำงาน
-            </p>
-            <p>
-              เราเปิดรับตัวแทนที่มีความตั้งใจและพร้อมเติบโตไปด้วยกัน
-              ไม่จำเป็นต้องมีประสบการณ์ เรามีทีมงานคอยสอนและดูแลทุกขั้นตอน
-            </p>
-          </div>
+      <div className="panel p-5 mb-4">
+        <h3 className="text-base font-semibold text-[var(--brand-primary)] mb-3">
+          โปรแกรมตัวแทน {config.siteNameTh}
+        </h3>
+        <div className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-2xl">
+          <p>
+            ร่วมเป็นตัวแทนของ {config.siteNameTh} สร้างรายได้จากการแนะนำสมาชิก
+            พร้อมรับสิทธิพิเศษมากมาย
+          </p>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-3 mb-4">
         {[
-          { value: 'สูงสุด', label: 'ค่าคอมมิชชั่น', sub: 'อัตราที่คุ้มค่า' },
-          { value: `${roundCount}`, label: 'รอบต่อวัน', sub: 'ครบทุกตลาด' },
-          { value: '24/7', label: 'ซัพพอร์ต', sub: 'พร้อมช่วยเหลือ' },
+          { value: 'สูงสุด', label: 'ค่าคอมฯ' },
+          { value: `${roundCount}`, label: 'รอบ/วัน' },
+          { value: '24/7', label: 'ซัพพอร์ต' },
         ].map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-5 text-center"
-          >
-            <div className="font-mono text-2xl md:text-3xl font-bold gradient-text mb-1">
+          <div key={stat.label} className="panel p-4 text-center">
+            <div className="font-[family-name:var(--font-mono)] text-xl font-bold text-[var(--brand-primary)] mb-0.5">
               {stat.value}
             </div>
-            <div className="text-sm font-semibold text-[var(--text-primary)]">{stat.label}</div>
-            <div className="text-[10px] text-[var(--text-muted)] mt-0.5">{stat.sub}</div>
+            <div className="text-[10px] text-[var(--text-muted)]">{stat.label}</div>
           </div>
         ))}
       </div>
 
       {/* Benefits */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {benefits.map((benefit, i) => (
-          <div
-            key={benefit.title}
-            className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-6 flex items-start gap-4 hover:border-[var(--brand-primary)]/30 transition-all"
-            style={{
-              animation: 'fadeInUp 0.4s ease-out backwards',
-              animationDelay: `${i * 0.08}s`,
-            }}
-          >
-            <div className="w-10 h-10 rounded-[10px] bg-[var(--brand-primary)]/10 flex items-center justify-center text-xl shrink-0">
-              {benefit.icon}
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        {benefits.map((benefit) => (
+          <div key={benefit.title} className="panel p-4 flex items-start gap-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand-primary)] mt-2 shrink-0" />
             <div>
-              <div className="text-sm font-semibold text-[var(--text-primary)] mb-1">
-                {benefit.title}
-              </div>
-              <div className="text-xs text-[var(--text-muted)] leading-relaxed">
-                {benefit.description}
-              </div>
+              <div className="text-sm font-medium text-[var(--text-primary)] mb-0.5">{benefit.title}</div>
+              <div className="text-xs text-[var(--text-muted)]">{benefit.description}</div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* How it works */}
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-6 md:p-8 mb-6">
-        <h3 className="font-heading text-xl tracking-[2px] text-[var(--brand-primary)] mb-6">
-          {'\u{1F4CB}'} ขั้นตอนการสมัคร
-        </h3>
+      {/* Steps */}
+      <div className="panel p-5 mb-4">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">ขั้นตอนการสมัคร</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {steps.map((s, i) => (
-            <div key={s.step} className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-[var(--brand-primary)]/10 flex items-center justify-center shrink-0">
-                <span className="font-mono text-lg font-bold gradient-text">{s.step}</span>
+          {steps.map((s) => (
+            <div key={s.step} className="flex items-start gap-3">
+              <span className="font-[family-name:var(--font-mono)] text-sm font-bold text-[var(--brand-primary)]">{s.step}</span>
+              <div>
+                <div className="text-sm font-medium text-[var(--text-primary)]">{s.title}</div>
+                <div className="text-xs text-[var(--text-muted)]">{s.description}</div>
               </div>
-              <div className="flex-1">
-                <div className="text-sm font-semibold text-[var(--text-primary)] mb-1">
-                  {s.title}
-                </div>
-                <div className="text-xs text-[var(--text-muted)] leading-relaxed">
-                  {s.description}
-                </div>
-              </div>
-              {i < steps.length - 1 && (
-                <div className="hidden md:flex items-center text-[var(--text-muted)] text-lg">
-                  {'\u2192'}
-                </div>
-              )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Requirements */}
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-6 md:p-8 mb-6">
-        <h3 className="font-heading text-xl tracking-[2px] text-[var(--brand-primary)] mb-4">
-          {'\u2705'} คุณสมบัติผู้สมัคร
-        </h3>
-        <ul className="space-y-3 text-sm text-[var(--text-secondary)]">
-          {[
-            'อายุ 18 ปีขึ้นไป',
-            'มีบัญชี LINE สำหรับติดต่อสื่อสาร',
-            'มีความรับผิดชอบและตั้งใจทำงาน',
-            'สามารถใช้งานสมาร์ทโฟนหรือคอมพิวเตอร์ได้',
-            'ไม่จำเป็นต้องมีประสบการณ์ — มีทีมงานสอนให้',
-          ].map((req) => (
-            <li key={req} className="flex items-start gap-3">
-              <span className="w-5 h-5 rounded-full bg-[var(--brand-primary)]/10 flex items-center justify-center shrink-0 mt-0.5">
-                <span className="text-[10px] text-[var(--brand-primary)]">{'\u2713'}</span>
-              </span>
-              {req}
-            </li>
-          ))}
-        </ul>
-      </div>
-
       {/* API Access CTA */}
-      <div className="bg-[var(--bg-card)] border border-[var(--brand-primary)]/20 rounded-[14px] p-6 md:p-8 mb-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--brand-primary)]/5 to-transparent pointer-events-none" />
-        <div className="relative flex flex-col md:flex-row items-start md:items-center gap-4">
-          <div className="w-12 h-12 rounded-[10px] bg-[var(--brand-primary)]/10 flex items-center justify-center text-2xl shrink-0">
-            {'\u{1F517}'}
-          </div>
+      <div className="panel p-4 mb-4 border-[var(--brand-primary)]/20">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
           <div className="flex-1">
-            <div className="text-sm font-semibold text-[var(--text-primary)] mb-1">
+            <div className="text-sm font-medium text-[var(--text-primary)] mb-0.5">
               มีระบบอยู่แล้ว? เชื่อมต่อผ่าน API
             </div>
-            <div className="text-xs text-[var(--text-muted)] leading-relaxed">
-              สำหรับเว็บไซต์หรือแพลตฟอร์มที่ต้องการดึงผลหวยหุ้นแบบเรียลไทม์ผ่าน REST API พร้อม Webhook push notification
+            <div className="text-xs text-[var(--text-muted)]">
+              ดึงผลหวยหุ้นแบบเรียลไทม์ผ่าน REST API + Webhook
             </div>
           </div>
           <button
             onClick={() => setApiModalOpen(true)}
-            className="shrink-0 bg-[var(--bg-secondary)] border border-[var(--brand-primary)]/30 text-[var(--brand-primary)] font-semibold rounded-lg px-5 py-2.5 text-sm transition-all hover:bg-[var(--brand-primary)]/10"
+            className="shrink-0 bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/30 text-[var(--brand-primary)] font-medium rounded px-4 py-2 text-sm transition-colors hover:bg-[var(--brand-primary)]/20"
           >
             ขอใช้ API
           </button>
@@ -237,133 +162,66 @@ export default function AgentPage() {
       </div>
 
       {/* Registration Form */}
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-6 md:p-8">
-        <h3 className="font-heading text-xl tracking-[2px] text-[var(--brand-primary)] mb-6">
-          {'\u{1F4DD}'} แบบฟอร์มสมัครตัวแทน
-        </h3>
+      <div className="panel p-5">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">แบบฟอร์มสมัครตัวแทน</h3>
 
         {success ? (
-          <div
-            className="bg-emerald-500/10 border border-emerald-500/30 rounded-[14px] p-6 text-center"
-            style={{ animation: 'fadeInUp 0.4s ease-out' }}
-          >
-            <div className="text-4xl mb-3">{'\u2705'}</div>
-            <div className="text-lg font-semibold text-emerald-400 mb-2">
-              ส่งใบสมัครเรียบร้อยแล้ว!
-            </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              ทีมงานจะตรวจสอบและติดต่อกลับทาง LINE ภายใน 24 ชั่วโมง
-            </div>
+          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded p-5 text-center">
+            <div className="text-lg font-semibold text-emerald-400 mb-1">ส่งใบสมัครเรียบร้อยแล้ว!</div>
+            <div className="text-sm text-[var(--text-secondary)]">ทีมงานจะติดต่อกลับทาง LINE ภายใน 24 ชั่วโมง</div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Full Name */}
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+              <label className="block text-xs text-[var(--text-secondary)] mb-1.5">
                 ชื่อ-นามสกุล <span className="text-red-400">*</span>
               </label>
-              <input
-                type="text"
-                name="full_name"
-                value={form.full_name}
-                onChange={handleChange}
-                required
-                placeholder="กรอกชื่อ-นามสกุล"
-                className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/40 focus:border-[var(--brand-primary)]/50 transition-all"
-              />
+              <input type="text" name="full_name" value={form.full_name} onChange={handleChange} required placeholder="กรอกชื่อ-นามสกุล" className={inputClass} />
             </div>
-
-            {/* Phone */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+              <label className="block text-xs text-[var(--text-secondary)] mb-1.5">
                 เบอร์โทรศัพท์ <span className="text-red-400">*</span>
               </label>
-              <input
-                type="tel"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                required
-                placeholder="0812345678"
-                maxLength={10}
-                className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/40 focus:border-[var(--brand-primary)]/50 transition-all"
-              />
+              <input type="tel" name="phone" value={form.phone} onChange={handleChange} required placeholder="0812345678" maxLength={10} className={inputClass} />
             </div>
-
-            {/* LINE ID */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+              <label className="block text-xs text-[var(--text-secondary)] mb-1.5">
                 LINE ID <span className="text-red-400">*</span>
               </label>
-              <input
-                type="text"
-                name="line_id"
-                value={form.line_id}
-                onChange={handleChange}
-                required
-                placeholder="กรอก LINE ID ของคุณ"
-                className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/40 focus:border-[var(--brand-primary)]/50 transition-all"
-              />
+              <input type="text" name="line_id" value={form.line_id} onChange={handleChange} required placeholder="กรอก LINE ID" className={inputClass} />
             </div>
-
-            {/* Experience */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-                ประสบการณ์ <span className="text-[var(--text-muted)]">(ไม่บังคับ)</span>
-              </label>
-              <textarea
-                name="experience"
-                value={form.experience}
-                onChange={handleChange}
-                rows={3}
-                placeholder="เล่าประสบการณ์ที่เกี่ยวข้อง (ถ้ามี)"
-                className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/40 focus:border-[var(--brand-primary)]/50 transition-all resize-none"
-              />
+              <label className="block text-xs text-[var(--text-secondary)] mb-1.5">ประสบการณ์</label>
+              <textarea name="experience" value={form.experience} onChange={handleChange} rows={3} placeholder="เล่าประสบการณ์ที่เกี่ยวข้อง (ถ้ามี)" className={`${inputClass} resize-none`} />
             </div>
-
-            {/* Referral Source */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-                ทราบจากช่องทางใด <span className="text-[var(--text-muted)]">(ไม่บังคับ)</span>
-              </label>
-              <select
-                name="referral_source"
-                value={form.referral_source}
-                onChange={handleChange}
-                className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/40 focus:border-[var(--brand-primary)]/50 transition-all"
-              >
+              <label className="block text-xs text-[var(--text-secondary)] mb-1.5">ทราบจากช่องทางใด</label>
+              <select name="referral_source" value={form.referral_source} onChange={handleChange} className={inputClass}>
                 {referralOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
             </div>
 
-            {/* Error */}
             {error && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-sm text-red-400">
-                {error}
-              </div>
+              <div className="bg-red-500/10 border border-red-500/30 rounded px-3 py-2 text-sm text-red-400">{error}</div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[var(--brand-primary)] text-[var(--bg-primary)] font-semibold rounded-lg px-6 py-3.5 text-sm tracking-wide transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[var(--brand-primary)] text-[var(--bg-primary)] font-semibold rounded px-5 py-2.5 text-sm transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'กำลังส่งใบสมัคร...' : 'ส่งใบสมัคร'}
+              {loading ? 'กำลังส่ง...' : 'ส่งใบสมัคร'}
             </button>
 
-            <p className="text-[11px] text-[var(--text-muted)] text-center">
-              การส่งใบสมัครถือว่าคุณยอมรับเงื่อนไขและข้อกำหนดของ {config.siteName}
+            <p className="text-[10px] text-[var(--text-muted)] text-center">
+              การส่งใบสมัครถือว่าคุณยอมรับเงื่อนไขของ {config.siteName}
             </p>
           </form>
         )}
       </div>
 
-      {/* API Access Modal */}
       <ApiAccessModal open={apiModalOpen} onClose={() => setApiModalOpen(false)} />
     </div>
   );

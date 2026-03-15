@@ -59,6 +59,7 @@ async function getResults(brand: string, date: string): Promise<StockResult[]> {
       source: brand as 'vvip' | 'platinum',
       market: m.code,
       marketLabelTh: m.labelTh,
+      marketLabelLo: m.labelLo,
       flagEmoji: m.flagEmoji,
       winningNumber: null,
       winningNumber2d: null,

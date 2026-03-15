@@ -96,7 +96,7 @@ export default function ApiAccessModal({ open, onClose }: ApiAccessModalProps) {
 
   if (!open) return null;
 
-  const inputClass = 'w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/40 focus:border-[var(--brand-primary)]/50 transition-all';
+  const inputClass = 'w-full bg-[var(--bg-input)] border border-[var(--border)] rounded px-3.5 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--brand-primary)] transition-colors';
 
   return (
     <div
@@ -108,21 +108,21 @@ export default function ApiAccessModal({ open, onClose }: ApiAccessModalProps) {
 
       {/* Modal */}
       <div
-        className="relative bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl"
+        className="relative bg-[var(--bg-card)] border border-[var(--border)] rounded w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl"
         onClick={e => e.stopPropagation()}
         style={{ animation: 'fadeInUp 0.3s ease-out' }}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-4 flex items-center justify-between rounded-t-[14px] z-10">
+        <div className="sticky top-0 bg-[var(--bg-card)] border-b border-[var(--border)] px-5 py-3 flex items-center justify-between rounded-t z-10">
           <div>
-            <h3 className="font-heading text-lg tracking-[2px] text-[var(--brand-primary)]">
-              {'\u{1F517}'} ขอใช้งาน API
+            <h3 className="text-sm font-semibold text-[var(--brand-primary)]">
+              ขอใช้งาน API
             </h3>
             <p className="text-[11px] text-[var(--text-muted)] mt-0.5">สำหรับระบบที่ต้องการเชื่อมต่อผลหวยหุ้น</p>
           </div>
           <button
             onClick={handleClose}
-            className="w-8 h-8 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/80 transition-all"
+            className="w-7 h-7 rounded bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             {'\u2715'}
           </button>
@@ -131,7 +131,7 @@ export default function ApiAccessModal({ open, onClose }: ApiAccessModalProps) {
         <div className="p-6">
           {success ? (
             <div
-              className="bg-emerald-500/10 border border-emerald-500/30 rounded-[14px] p-6 text-center"
+              className="bg-emerald-500/10 border border-emerald-500/30 rounded p-5 text-center"
               style={{ animation: 'fadeInUp 0.4s ease-out' }}
             >
               <div className="text-4xl mb-3">{'\u2705'}</div>
@@ -300,7 +300,7 @@ export default function ApiAccessModal({ open, onClose }: ApiAccessModalProps) {
 
                 {/* Error */}
                 {error && (
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-sm text-red-400">
+                  <div className="bg-red-500/10 border border-red-500/30 rounded px-3 py-2 text-sm text-red-400">
                     {error}
                   </div>
                 )}
@@ -309,7 +309,7 @@ export default function ApiAccessModal({ open, onClose }: ApiAccessModalProps) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[var(--brand-primary)] text-[var(--bg-primary)] font-semibold rounded-lg px-6 py-3.5 text-sm tracking-wide transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[var(--brand-primary)] text-[var(--bg-primary)] font-semibold rounded px-5 py-2.5 text-sm transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'กำลังส่งคำขอ...' : 'ส่งคำขอใช้ API'}
                 </button>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useI18n } from '@/lib/i18n';
 import type { ScheduleMarketDisplay } from './ScheduleMarketCard';
 
 interface ScheduleDayProgressProps {
@@ -9,6 +10,7 @@ interface ScheduleDayProgressProps {
 }
 
 export default function ScheduleDayProgress({ markets, firstOpenISO, lastAnnounceISO }: ScheduleDayProgressProps) {
+  const { t } = useI18n();
   const now = Date.now();
   const start = new Date(firstOpenISO).getTime();
   const end = new Date(lastAnnounceISO).getTime();
@@ -31,63 +33,36 @@ export default function ScheduleDayProgress({ markets, firstOpenISO, lastAnnounc
   });
 
   return (
-    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-[14px] p-4 md:p-6 mb-6">
+    <div className="panel p-4 mb-4">
       {/* Progress bar */}
-      <div className="relative h-2 rounded-full bg-[var(--bg-secondary)]">
-        {/* Filled portion */}
+      <div className="relative h-1.5 rounded-full bg-[var(--bg-primary)]">
         <div
-          className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[var(--brand-dark)] to-[var(--brand-primary)] transition-all duration-1000"
+          className="absolute top-0 left-0 h-full rounded-full bg-[var(--brand-primary)] transition-all duration-1000"
           style={{ width: `${currentPosition}%` }}
         />
-
-        {/* Current time marker */}
         <div
-          className="absolute top-1/2 w-3 h-3 rounded-full bg-[var(--brand-primary)] shadow-[0_0_8px_var(--brand-glow)] z-20 transition-all duration-1000"
+          className="absolute top-1/2 w-2.5 h-2.5 rounded-full bg-[var(--brand-primary)] shadow-[0_0_6px_var(--brand-glow)] z-20 transition-all duration-1000"
           style={{ left: `${currentPosition}%`, transform: 'translateX(-50%) translateY(-50%)' }}
         />
-
-        {/* Market dots - hidden on mobile */}
-        <div className="hidden md:block">
-          {markets.map((market) => {
-            const closePos = totalSpan > 0
-              ? ((new Date(market.closeTimeISO).getTime() - start) / totalSpan) * 100
-              : 0;
-            const dotColor =
-              market.displayStatus === 'resulted'
-                ? 'bg-[var(--accent-green)]'
-                : market.displayStatus === 'open'
-                  ? 'bg-[var(--brand-primary)]'
-                  : 'bg-[var(--text-muted)]';
-
-            return (
-              <div
-                key={market.code}
-                className={`absolute top-1/2 w-1.5 h-1.5 rounded-full ${dotColor} z-10`}
-                style={{ left: `${closePos}%`, transform: 'translateX(-50%) translateY(-50%)' }}
-                title={`${market.labelTh} - ${market.closeTimeDisplay}`}
-              />
-            );
-          })}
-        </div>
       </div>
 
       {/* Stats */}
-      <div className="flex items-center justify-between text-sm mt-3">
-        <div className="text-[var(--text-secondary)] font-thai">
+      <div className="flex items-center justify-between text-xs mt-2.5">
+        <div className="text-[var(--text-secondary)]">
           {allDone ? (
-            <span className="text-[var(--accent-green)]">&#x2714; ผลหวยออกครบทุกรอบแล้ววันนี้</span>
+            <span className="text-[var(--accent-green)]">{t('status.resulted')}</span>
           ) : (
             <>
-              ออกผลแล้ว{' '}
-              <span className="text-[var(--brand-primary)] font-semibold">
+              {t('results.progress')}{' '}
+              <span className="text-[var(--brand-primary)] font-semibold font-[family-name:var(--font-mono)]">
                 {resultedCount}/{totalCount}
               </span>{' '}
-              รอบ
+              {t('results.rounds')}
             </>
           )}
         </div>
-        <div className="font-mono text-xs text-[var(--text-muted)]">
-          &#x1F550; {bangkokTime}
+        <div className="font-[family-name:var(--font-mono)] text-[11px] text-[var(--text-muted)]">
+          {bangkokTime}
         </div>
       </div>
     </div>

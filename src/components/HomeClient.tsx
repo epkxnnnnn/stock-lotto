@@ -3,10 +3,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import type { StockResult } from '@/types';
-import HeroNextRound from './HeroNextRound';
-import CountdownStrip from './CountdownStrip';
-import ResultsGrid from './ResultsGrid';
-import SectionTitle from './SectionTitle';
+import { useI18n } from '@/lib/i18n';
+import TickerTape from './TickerTape';
+import HeroSplit from './HeroSplit';
+import MarketOverviewTable from './MarketOverviewTable';
+import SettledMarketsTable from './SettledMarketsTable';
 
 interface HomeClientProps {
   initialResults: StockResult[];
@@ -22,6 +23,7 @@ function mapRow(r: Record<string, unknown>): StockResult {
     source: r.source as 'vvip' | 'platinum',
     market: r.market as string,
     marketLabelTh: r.market_label_th as string,
+    marketLabelLo: (r.market_label_lo as string) ?? undefined,
     flagEmoji: r.flag_emoji as string,
     winningNumber: r.winning_number as string | null,
     winningNumber2d: (r.winning_number_2d as string | null) ?? null,
@@ -38,7 +40,8 @@ function mapRow(r: Record<string, unknown>): StockResult {
 export default function HomeClient({ initialResults, initialYesterdayResults, brand, today, yesterday }: HomeClientProps) {
   const [results, setResults] = useState<StockResult[]>(initialResults);
   const [yesterdayResults] = useState<StockResult[]>(initialYesterdayResults);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [, setRefreshKey] = useState(0);
+  const { t } = useI18n();
 
   // Refetch all results from Supabase (called when countdown expires)
   const refetchResults = useCallback(async () => {
@@ -56,12 +59,10 @@ export default function HomeClient({ initialResults, initialYesterdayResults, br
     if (data && data.length > 0) {
       setResults(data.map((r: Record<string, unknown>) => mapRow(r)));
     }
-    // Force re-render to recalculate nextRound/upcomingRounds
     setRefreshKey((k) => k + 1);
   }, [brand, today]);
 
   const handleCountdownExpire = useCallback(() => {
-    // Small delay to let server-side status update propagate
     setTimeout(() => refetchResults(), 3000);
   }, [refetchResults]);
 
@@ -110,34 +111,42 @@ export default function HomeClient({ initialResults, initialYesterdayResults, br
   const now = new Date();
   const openRounds = results.filter((r) => r.status === 'open');
   const nextRound = openRounds.find((r) => new Date(r.closeTime) > now);
-  const upcomingRounds = openRounds.filter((r) => r !== nextRound);
 
   const hasAnyResult = results.some((r) => r.winningNumber);
   const showYesterday = !hasAnyResult && yesterdayResults.length > 0;
 
-  const displayDate = showYesterday ? yesterday : today;
-  const displayFormatted = new Date(displayDate + 'T00:00:00').toLocaleDateString('th-TH', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-
   const displayResults = showYesterday ? yesterdayResults : results;
-  const sectionLabel = showYesterday ? 'ผลหวยล่าสุด (เมื่อวาน)' : 'ผลหวยวันนี้';
+  const sectionLabel = showYesterday ? t('section.yesterdayResults') : t('section.todayResults');
+
+  // Latest 5 results for the bottom-right table (SettledMarketsTable filters internally)
+  const latestResults = displayResults.slice(-5);
 
   return (
     <>
-      <HeroNextRound nextRound={nextRound} onCountdownExpire={handleCountdownExpire} />
+      <TickerTape results={displayResults} />
 
-      {upcomingRounds.length > 0 && (
-        <>
-          <SectionTitle>&#x23F3; รอบที่กำลังจะมา</SectionTitle>
-          <CountdownStrip rounds={upcomingRounds} />
-        </>
-      )}
+      <div className="py-4">
+        <HeroSplit
+          nextRound={nextRound}
+          results={displayResults}
+          onCountdownExpire={handleCountdownExpire}
+        />
 
-      <SectionTitle>&#x1F3C6; {sectionLabel} &mdash; {displayFormatted}</SectionTitle>
-      <ResultsGrid results={displayResults} />
+        <MarketOverviewTable results={displayResults} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <SettledMarketsTable
+            results={displayResults}
+            title={t('section.settledMarkets')}
+            variant="settled"
+          />
+          <SettledMarketsTable
+            results={latestResults}
+            title={t('section.latestResults')}
+            variant="latest"
+          />
+        </div>
+      </div>
     </>
   );
 }

@@ -1,29 +1,18 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-thai: 'Prompt', sans-serif;
-  --font-mono: 'Orbitron', sans-serif;
-  --font-heading: 'Bebas Neue', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-thai: 'Noto Sans Thai', sans-serif;
+  --font-lao: 'Noto Sans Lao', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: var(--font-thai);
+  font-family: var(--font-sans);
   min-height: 100vh;
   overflow-x: hidden;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--body-texture);
-  pointer-events: none;
-  z-index: 0;
 }
 
 /* Gradient text utility */
@@ -40,21 +29,21 @@ body::before {
   50% { opacity: 0.4; transform: scale(0.8); }
 }
 
-/* Shimmer animation for platinum logo */
-@keyframes shimmer {
-  0% { transform: translateX(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) rotate(45deg); }
-}
-
-/* Fade in up animation for staggered card entry */
+/* Fade in up animation for staggered entry */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Ticker scroll animation */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* Container utility */
 .container-main {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px;
   position: relative;
@@ -65,4 +54,34 @@ body::before {
   .container-main {
     padding: 0 20px;
   }
+}
+
+/* Exchange-style panel */
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.panel-hover:hover {
+  background: var(--bg-card-hover);
+}
+
+/* Scrollbar styling for exchange feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }

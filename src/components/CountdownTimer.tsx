@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useI18n } from '@/lib/i18n';
 
 interface CountdownTimerProps {
   targetTime: string; // ISO timestamp
@@ -25,13 +26,14 @@ function pad(n: number): string {
 
 export default function CountdownTimer({ targetTime, onExpire }: CountdownTimerProps) {
   const [time, setTime] = useState(getTimeLeft(targetTime));
+  const { t } = useI18n();
 
   useEffect(() => {
     let fired = false;
     const interval = setInterval(() => {
-      const t = getTimeLeft(targetTime);
-      setTime(t);
-      if (t.expired) {
+      const tl = getTimeLeft(targetTime);
+      setTime(tl);
+      if (tl.expired) {
         clearInterval(interval);
         if (!fired && onExpire) {
           fired = true;
@@ -44,21 +46,20 @@ export default function CountdownTimer({ targetTime, onExpire }: CountdownTimerP
   }, [targetTime, onExpire]);
 
   return (
-    <div className="flex justify-center gap-2 md:gap-3 mt-5">
+    <div className="flex justify-center gap-2">
       {[
-        { value: time.hours, label: 'ชั่วโมง' },
-        { value: time.minutes, label: 'นาที' },
-        { value: time.seconds, label: 'วินาที' },
+        { value: time.hours, label: t('countdown.hours') },
+        { value: time.minutes, label: t('countdown.minutes') },
+        { value: time.seconds, label: t('countdown.seconds') },
       ].map((item) => (
         <div
           key={item.label}
-          className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl min-w-[60px] px-3 py-3 md:min-w-[80px] md:px-5 md:py-4 text-center relative overflow-hidden"
+          className="bg-[var(--bg-primary)] border border-[var(--border)] rounded min-w-[52px] px-2 py-2 md:min-w-[64px] md:px-3 md:py-3 text-center"
         >
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--brand-dark)] via-[var(--brand-accent)] to-[var(--brand-dark)]" />
-          <div className="font-mono text-2xl md:text-4xl font-bold text-[var(--brand-light)] leading-none tabular-nums">
+          <div className="font-[family-name:var(--font-mono)] text-xl md:text-2xl font-bold text-[var(--brand-light)] leading-none tabular-nums">
             {pad(item.value)}
           </div>
-          <div className="text-[10px] md:text-[11px] text-[var(--text-muted)] mt-1.5 tracking-[2px] uppercase">
+          <div className="text-[9px] md:text-[10px] text-[var(--text-muted)] mt-1 tracking-wider uppercase">
             {item.label}
           </div>
         </div>

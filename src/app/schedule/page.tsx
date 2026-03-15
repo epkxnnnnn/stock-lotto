@@ -3,7 +3,6 @@ import { getBrandConfig } from '@/lib/theme/config';
 import { getMarkets } from '@/lib/theme/rounds';
 import { createClient } from '@supabase/supabase-js';
 import ScheduleTimeline from '@/components/ScheduleTimeline';
-import SectionTitle from '@/components/SectionTitle';
 import type { ScheduleMarketData } from '@/components/ScheduleTimeline';
 
 const scheduleConfig = getBrandConfig();
@@ -33,7 +32,6 @@ export default async function SchedulePage() {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
   const markets = getMarkets(brand);
 
-  // Fetch today's results from Supabase
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_KEY!
@@ -46,7 +44,6 @@ export default async function SchedulePage() {
     .eq('round_date', today)
     .order('close_time', { ascending: true });
 
-  // Map DB results by market code for quick lookup
   const resultMap = new Map<string, Record<string, unknown>>();
   if (data) {
     for (const row of data) {
@@ -54,7 +51,6 @@ export default async function SchedulePage() {
     }
   }
 
-  // Merge market config with DB results
   const scheduleMarkets: ScheduleMarketData[] = markets.map(m => {
     const dbRow = resultMap.get(m.code);
     const cleanLabel = m.labelTh
@@ -65,6 +61,7 @@ export default async function SchedulePage() {
     return {
       code: m.code,
       labelTh: cleanLabel,
+      labelLo: m.labelLo,
       flagEmoji: m.flagEmoji,
       openTimeISO: `${today}T${m.openTime}:00+07:00`,
       closeTimeISO: dbRow ? (dbRow.close_time as string) : `${today}T${m.closeTime}:00+07:00`,
@@ -82,8 +79,7 @@ export default async function SchedulePage() {
   });
 
   return (
-    <div className="container-main py-6">
-      <SectionTitle>&#x1F552; ตารางเวลาออกผล</SectionTitle>
+    <div className="py-6">
       <ScheduleTimeline initialMarkets={scheduleMarkets} brand={brand} today={today} />
     </div>
   );
