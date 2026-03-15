@@ -7,7 +7,7 @@ const TICKER_SYMBOLS = [
   { proName: 'TVC:NI225', title: 'Nikkei 225' },
   { proName: 'TVC:HSI', title: 'Hang Seng' },
   { proName: 'SSE:000001', title: 'Shanghai' },
-  { proName: 'TWSE:TAIEX', title: 'TAIEX' },
+  { proName: 'INDEX:TAIEX', title: 'TAIEX' },
   { proName: 'KRX:KOSPI', title: 'KOSPI' },
   { proName: 'TVC:STI', title: 'Straits Times' },
   { proName: 'HOSE:VNINDEX', title: 'VN-Index' },

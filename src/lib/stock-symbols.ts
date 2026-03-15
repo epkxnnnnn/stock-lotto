@@ -11,7 +11,7 @@ export const stockSymbols: Record<string, { symbol: string; indexName: string; y
   china_pm: { symbol: 'SSE:000001', indexName: 'Shanghai Composite', yahooSymbol: '000001.SS' },
   hangseng_am: { symbol: 'TVC:HSI', indexName: 'Hang Seng', yahooSymbol: '^HSI' },
   hangseng_pm: { symbol: 'TVC:HSI', indexName: 'Hang Seng', yahooSymbol: '^HSI' },
-  taiwan: { symbol: 'TWSE:TAIEX', indexName: 'TAIEX', yahooSymbol: '^TWII' },
+  taiwan: { symbol: 'INDEX:TAIEX', indexName: 'TAIEX', yahooSymbol: '^TWII' },
   korea: { symbol: 'KRX:KOSPI', indexName: 'KOSPI', yahooSymbol: '^KS11' },
   singapore: { symbol: 'TVC:STI', indexName: 'Straits Times', yahooSymbol: '^STI' },
   vietnam_am: { symbol: 'HOSE:VNINDEX', indexName: 'VN-Index', yahooSymbol: '^VNINDEX' },
