@@ -35,12 +35,12 @@ export default function GlobalIndicesWidget() {
           symbols: [
             { s: 'FOREXCOM:DJI', d: 'Dow Jones' },
             { s: 'FOREXCOM:NI225', d: 'Nikkei 225' },
-            { s: 'HSI:HSI', d: 'Hang Seng' },
-            { s: 'SSE:000001', d: 'Shanghai' },
-            { s: 'KRX:KOSPI', d: 'KOSPI' },
-            { s: 'TWSE:TAIEX', d: 'TAIEX' },
-            { s: 'SGX:ES3', d: 'STI (ES3)' },
-            { s: 'HOSE:VNINDEX', d: 'VN-Index' },
+            { s: 'FOREXCOM:HSI', d: 'Hang Seng' },
+            { s: 'TVC:SHCOMP', d: 'Shanghai' },
+            { s: 'TVC:KOSPI', d: 'KOSPI' },
+            { s: 'TVC:TWII', d: 'TAIEX' },
+            { s: 'TVC:STI', d: 'Straits Times' },
+            { s: 'TVC:VNINDEX', d: 'VN-Index' },
           ],
         },
         {
