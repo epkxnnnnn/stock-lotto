@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import { getBrandConfig } from '@/lib/theme/config';
 import { getMarkets } from '@/lib/theme/rounds';
-import { getMarketBySlug, marketCodeToSlug } from '@/lib/market-utils';
+import { getMarketBySlug, marketCodeToSlug, getRelatedMarkets } from '@/lib/market-utils';
 import { getMarketDescription } from '@/config/market-descriptions';
 import type { StockResult } from '@/types';
 import MarketPageClient from './MarketPageClient';
@@ -35,6 +35,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? `ตรวจผลหวยหุ้น${market.labelTh} (${market.stockIndex}) อัพเดทเรียลไทม์ ${desc.exchangeName} ${desc.exchangeCountry}`
     : `ตรวจผลหวยหุ้น${market.labelTh} (${market.stockIndex}) อัพเดทเรียลไทม์ | ${config.siteNameTh}`;
 
+  const ogImage = `${baseUrl}/images/og-${config.brand}.png`;
+
   return {
     title,
     description,
@@ -44,6 +46,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: `${baseUrl}/market/${slug}`,
       siteName: config.siteName,
+      type: 'article',
+      locale: 'th_TH',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `ผลหวยหุ้น${market.labelTh}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `ผลหวยหุ้น${market.labelTh} — ${market.stockIndex}`,
+      description,
+      images: [ogImage],
     },
     alternates: {
       canonical: `${baseUrl}/market/${slug}`,
@@ -81,6 +92,12 @@ export default async function MarketPage({ params }: PageProps) {
 
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
   const desc = getMarketDescription(market.code);
+  const allMarkets = getMarkets(config.brand);
+
+  // Resolve related markets
+  const relatedMarkets = desc
+    ? getRelatedMarkets(config.brand, market.code, desc.relatedMarkets)
+    : [];
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -131,31 +148,51 @@ export default async function MarketPage({ params }: PageProps) {
 
   const history: StockResult[] = historyData ? historyData.map(mapRow) : [];
 
-  // JSON-LD breadcrumbs — safe: all values are from trusted server config, not user input
-  const jsonLd = JSON.stringify({
+  const baseUrl = `https://${config.domain}`;
+
+  // JSON-LD schemas — safe: all values from trusted server config, not user input
+  const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'หน้าแรก',
-        item: `https://${config.domain}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: `หวยหุ้น${market.labelTh}`,
-        item: `https://${config.domain}/market/${slug}`,
-      },
+      { '@type': 'ListItem', position: 1, name: 'หน้าแรก', item: baseUrl },
+      { '@type': 'ListItem', position: 2, name: `หวยหุ้น${market.labelTh}`, item: `${baseUrl}/market/${slug}` },
     ],
-  });
+  };
+
+  const webPageLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `ผลหวยหุ้น${market.labelTh} วันนี้`,
+    description: desc
+      ? `ตรวจผลหวยหุ้น${market.labelTh} (${market.stockIndex}) อัพเดทเรียลไทม์ ${desc.exchangeName}`
+      : `ตรวจผลหวยหุ้น${market.labelTh} (${market.stockIndex})`,
+    url: `${baseUrl}/market/${slug}`,
+    inLanguage: 'th',
+    dateModified: new Date().toISOString(),
+    isPartOf: { '@type': 'WebSite', name: config.siteName, url: baseUrl },
+  };
+
+  const faqLd = desc?.faqTh?.length
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: desc.faqTh.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: { '@type': 'Answer', text: faq.a },
+        })),
+      }
+    : null;
+
+  const jsonLdArray = [breadcrumbLd, webPageLd, ...(faqLd ? [faqLd] : [])];
+  const jsonLdString = JSON.stringify(jsonLdArray);
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString }}
       />
       <MarketPageClient
         market={market}
@@ -164,6 +201,8 @@ export default async function MarketPage({ params }: PageProps) {
         history={history}
         brand={config.brand}
         today={today}
+        relatedMarkets={relatedMarkets}
+        allMarkets={allMarkets}
       />
     </>
   );

@@ -121,6 +121,12 @@ const translations: Record<string, { th: string; lo: string }> = {
   'market.time': { th: 'เวลา', lo: 'ເວລາ' },
   'market.noResult': { th: 'ยังไม่ออกผล', lo: 'ຍັງບໍ່ອອກຜົນ' },
   'market.backToHome': { th: 'กลับหน้าแรก', lo: 'ກັບໜ້າຫຼັກ' },
+  'market.relatedMarkets': { th: 'ตลาดที่เกี่ยวข้อง', lo: 'ຕະຫຼາດທີ່ກ່ຽວຂ້ອງ' },
+  'market.allMarkets': { th: 'ตลาดทั้งหมด', lo: 'ຕະຫຼາດທັງໝົດ' },
+  'market.quickLinks': { th: 'ลิงก์ด่วน', lo: 'ລິ້ງດ່ວນ' },
+  'market.viewAllResults': { th: 'ดูผลหวยย้อนหลังทุกตลาด', lo: 'ເບິ່ງຜົນຫວຍຍ້ອນຫຼັງທຸກຕະຫຼາດ' },
+  'market.viewSchedule': { th: 'ตารางเวลาออกผลทุกรอบ', lo: 'ຕາຕະລາງເວລາອອກຜົນທຸກຮອບ' },
+  'market.verifyResults': { th: 'ตรวจสอบความถูกต้องผลหวย', lo: 'ກວດສອບຄວາມຖືກຕ້ອງຜົນຫວຍ' },
 
   // Common
   'common.loading': { th: 'กำลังโหลด...', lo: 'ກຳລັງໂຫລດ...' },

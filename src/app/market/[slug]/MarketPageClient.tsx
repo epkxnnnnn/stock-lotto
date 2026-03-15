@@ -6,6 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Market, StockResult, Brand } from '@/types';
 import type { MarketDescription } from '@/config/market-descriptions';
 import { useI18n } from '@/lib/i18n';
+import { marketCodeToSlug } from '@/lib/market-utils';
 import FlagIcon from '@/components/FlagIcon';
 import NumberRenderer from '@/components/NumberRenderer';
 import TradingViewChart from '@/components/TradingViewChart';
@@ -18,6 +19,8 @@ interface MarketPageClientProps {
   history: StockResult[];
   brand: Brand;
   today: string;
+  relatedMarkets: Market[];
+  allMarkets: Market[];
 }
 
 function formatTime(iso: string): string {
@@ -116,6 +119,8 @@ export default function MarketPageClient({
   history,
   brand,
   today,
+  relatedMarkets,
+  allMarkets,
 }: MarketPageClientProps) {
   const { t, marketLabel } = useI18n();
   const [todayResult, setTodayResult] = useState<StockResult>(initialResult);
@@ -161,6 +166,7 @@ export default function MarketPageClient({
   }, [brand, market.code, today]);
 
   const isOpen = todayResult.status === 'open';
+  const otherMarkets = allMarkets.filter((m) => m.code !== market.code);
 
   return (
     <div className="py-4 space-y-4">
@@ -245,6 +251,34 @@ export default function MarketPageClient({
                 {description.tradingHoursTh}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Related Markets */}
+      {relatedMarkets.length > 0 && (
+        <div className="panel px-4 py-4">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
+            {t('market.relatedMarkets')}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+            {relatedMarkets.map((rm) => (
+              <Link
+                key={rm.code}
+                href={`/market/${marketCodeToSlug(rm.code)}`}
+                className="flex items-center gap-2 bg-[var(--bg-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg px-3 py-2.5 transition-colors border border-[var(--border)]"
+              >
+                <FlagIcon emoji={rm.flagEmoji} size={20} className="ring-0 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-xs font-medium text-[var(--text-primary)] truncate font-[family-name:var(--font-thai)]">
+                    {marketLabel(rm.labelTh, rm.labelLo)}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)] font-[family-name:var(--font-mono)]">
+                    {rm.stockIndex}
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       )}
@@ -358,6 +392,71 @@ export default function MarketPageClient({
           </>
         )}
       </div>
+
+      {/* Quick Links */}
+      <div className="panel px-4 py-4">
+        <h2 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
+          {t('market.quickLinks')}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <Link
+            href="/results"
+            className="flex items-center gap-2 bg-[var(--bg-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg px-3 py-2.5 transition-colors border border-[var(--border)]"
+          >
+            <svg className="w-4 h-4 text-[var(--brand-primary)] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            <span className="text-xs text-[var(--text-secondary)] font-[family-name:var(--font-thai)]">
+              {t('market.viewAllResults')}
+            </span>
+          </Link>
+          <Link
+            href="/schedule"
+            className="flex items-center gap-2 bg-[var(--bg-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg px-3 py-2.5 transition-colors border border-[var(--border)]"
+          >
+            <svg className="w-4 h-4 text-[var(--brand-primary)] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+            </svg>
+            <span className="text-xs text-[var(--text-secondary)] font-[family-name:var(--font-thai)]">
+              {t('market.viewSchedule')}
+            </span>
+          </Link>
+          <Link
+            href="/verify"
+            className="flex items-center gap-2 bg-[var(--bg-primary)] hover:bg-[var(--bg-card-hover)] rounded-lg px-3 py-2.5 transition-colors border border-[var(--border)]"
+          >
+            <svg className="w-4 h-4 text-[var(--brand-primary)] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+            </svg>
+            <span className="text-xs text-[var(--text-secondary)] font-[family-name:var(--font-thai)]">
+              {t('market.verifyResults')}
+            </span>
+          </Link>
+        </div>
+      </div>
+
+      {/* All Markets */}
+      {otherMarkets.length > 0 && (
+        <div className="panel px-4 py-4">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
+            {t('market.allMarkets')}
+          </h2>
+          <div className="flex flex-wrap gap-1.5">
+            {otherMarkets.map((m) => (
+              <Link
+                key={m.code}
+                href={`/market/${marketCodeToSlug(m.code)}`}
+                className="inline-flex items-center gap-1.5 bg-[var(--bg-primary)] hover:bg-[var(--bg-card-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors"
+              >
+                <FlagIcon emoji={m.flagEmoji} size={14} className="ring-0" />
+                <span className="text-[11px] text-[var(--text-secondary)] font-[family-name:var(--font-thai)]">
+                  {marketLabel(m.labelTh, m.labelLo)}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
