@@ -216,7 +216,7 @@ export default function HeroSplit({ nextRound, results, onCountdownExpire }: Her
 
   // Derive TradingView symbol and interval
   const stockInfo = getStockSymbol(selectedMarket);
-  const tvSymbol = stockInfo?.symbol ?? 'TVC:DJI';
+  const tvSymbol = stockInfo?.symbol ?? 'FOREXCOM:DJI';
   const tvInterval = stockInfo?.chartInterval ?? '15';
 
   // Build unique market list for dropdown (deduplicate same symbol markets like nikkei_am/nikkei_pm)
