@@ -116,6 +116,7 @@ export async function pushResultToKhong(params: PushParams): Promise<PushResult>
         .update({
           top: params.winningNumber,
           bottom: params.winningNumber2d,
+          admin_note: 'stock-lotto',
         })
         .eq('id', existingMeta.id);
 
@@ -130,6 +131,7 @@ export async function pushResultToKhong(params: PushParams): Promise<PushResult>
           top: params.winningNumber,
           bottom: params.winningNumber2d,
           meta_key: null,
+          admin_note: 'stock-lotto',
           created_at: new Date().toISOString(),
         });
 
