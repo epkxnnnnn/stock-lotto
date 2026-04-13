@@ -127,12 +127,13 @@ export async function GET(request: NextRequest) {
       .lte('close_time', now.toISOString());
 
     // Query b: markets with locally-generated results that should be overwritten by khong
+    // Use .or() to also match NULL generation_method (SQL: NULL != 'x' is NULL, not TRUE)
     const { data: staleResults } = await supabase
       .from('stock_results')
       .select('id, source, market, close_time')
       .eq('round_date', today)
       .eq('status', 'resulted')
-      .neq('generation_method', 'khong_sync')
+      .or('generation_method.is.null,generation_method.neq.khong_sync')
       .lte('close_time', now.toISOString());
 
     const unresolvedMarkets = [...(noResults || []), ...(staleResults || [])];
