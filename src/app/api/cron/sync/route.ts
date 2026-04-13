@@ -105,7 +105,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Step 3: Read results from Khong for closed markets without winning numbers
+  // Step 3: Read results from Khong for markets that need syncing
+  //   a) closed markets with no winning numbers yet
+  //   b) resulted markets whose numbers came from local generation (not khong_sync)
   interface SyncedResult {
     source: string;
     market: string;
@@ -115,13 +117,25 @@ export async function GET(request: NextRequest) {
   const syncedResults: SyncedResult[] = [];
 
   {
-    const { data: unresolvedMarkets } = await supabase
+    // Query a: markets with no results yet
+    const { data: noResults } = await supabase
       .from('stock_results')
       .select('id, source, market, close_time')
       .eq('round_date', today)
       .eq('status', 'closed')
       .is('winning_number', null)
       .lte('close_time', now.toISOString());
+
+    // Query b: markets with locally-generated results that should be overwritten by khong
+    const { data: staleResults } = await supabase
+      .from('stock_results')
+      .select('id, source, market, close_time')
+      .eq('round_date', today)
+      .eq('status', 'resulted')
+      .neq('generation_method', 'khong_sync')
+      .lte('close_time', now.toISOString());
+
+    const unresolvedMarkets = [...(noResults || []), ...(staleResults || [])];
 
     if (unresolvedMarkets && unresolvedMarkets.length > 0) {
       const khong = createKhongClient();
@@ -210,8 +224,7 @@ export async function GET(request: NextRequest) {
                       result_hash: resultHash,
                       updated_at: now.toISOString(),
                     })
-                    .eq('id', localRow.id)
-                    .is('winning_number', null);
+                    .eq('id', localRow.id);
 
                   if (!updateError) {
                     stats.synced++;
