@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 interface VerifiedBadgeProps {
   hash: string;
-  method?: 'auto' | 'manual' | 'stock_ref' | null;
+  method?: 'auto' | 'manual' | 'stock_ref' | 'khong_sync' | null;
 }
 
 export default function VerifiedBadge({ hash, method }: VerifiedBadgeProps) {
@@ -17,12 +17,16 @@ export default function VerifiedBadge({ hash, method }: VerifiedBadgeProps) {
     ? 'Stock Ref'
     : method === 'auto'
     ? 'Provably Fair'
+    : method === 'khong_sync'
+    ? 'Synced'
     : 'Manual';
 
   const methodColor = method === 'stock_ref'
     ? 'text-blue-400'
     : method === 'auto'
     ? 'text-emerald-400'
+    : method === 'khong_sync'
+    ? 'text-amber-400'
     : 'text-[var(--text-muted)]';
 
   const handleToggle = useCallback(() => {

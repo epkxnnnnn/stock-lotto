@@ -3,8 +3,6 @@ import type { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { computeResultHash, deriveNumbersFromSeed, deriveNumbersFromPrice } from '@/lib/verify';
 import { fetchStockPrice, getYahooSymbol } from '@/lib/stock-price';
-import { pushResultToKhong } from '@/lib/sync/push-to-khong';
-import type { Brand } from '@/types';
 import crypto from 'crypto';
 
 /**
@@ -122,23 +120,6 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Push generated results to Khong DB
-  let pushed = 0;
-  for (const r of results) {
-    const pushResult = await pushResultToKhong({
-      source: r.source as Brand,
-      market: r.market,
-      winningNumber: r.top,
-      winningNumber2d: r.bottom,
-      roundDate: date,
-    });
-    if (pushResult.success) {
-      pushed++;
-    } else {
-      console.error(`[admin/generate] Khong push failed for ${r.source}:${r.market}: ${pushResult.error}`);
-    }
-  }
-
   // Trigger webhook for each generated result (non-blocking)
   for (const r of results) {
     try {
@@ -159,10 +140,9 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     success: true,
     generated,
-    pushed,
     failed,
     date,
     results,
-    message: `Generated ${generated} results for ${date} (${pushed} pushed to Khong)${failed > 0 ? ` (${failed} failed)` : ''}`,
+    message: `Generated ${generated} results for ${date}${failed > 0 ? ` (${failed} failed)` : ''}`,
   });
 }

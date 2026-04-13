@@ -1,24 +1,37 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { computeResultHash, deriveNumbersFromPrice, deriveNumbersFromSeed } from '@/lib/verify';
-import { fetchStockPrice, getYahooSymbol, isWeekday } from '@/lib/stock-price';
-import { pushBatchToKhong } from '@/lib/sync/push-to-khong';
+import { createKhongClient } from '@/lib/supabase/khong';
+import { computeResultHash } from '@/lib/verify';
 import { dispatchWebhooks } from '@/lib/api/webhook';
 import { vvipMarkets } from '@/config/markets-vvip';
 import { platinumMarkets } from '@/config/markets-platinum';
-import crypto from 'crypto';
+import type { Market } from '@/types';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
 /**
+ * Build a reverse lookup: khongTemplateId → { source, market }
+ */
+function buildKhongToLocalMap(): Map<number, { source: 'vvip' | 'platinum'; market: string }> {
+  const map = new Map<number, { source: 'vvip' | 'platinum'; market: string }>();
+  const addMarkets = (markets: Market[], source: 'vvip' | 'platinum') => {
+    for (const m of markets) {
+      map.set(m.khongTemplateId, { source, market: m.code });
+    }
+  };
+  addMarkets(vvipMarkets, 'vvip');
+  addMarkets(platinumMarkets, 'platinum');
+  return map;
+}
+
+/**
  * Vercel Cron Job: runs every 2 minutes
  * 1. Seeds today's schedule if missing
  * 2. Auto-closes markets past close_time
- * 3. Generates results for closed markets (stock price / provably fair)
- * 4. Pushes results to Khong DB
- * 5. Dispatches webhooks to agents
+ * 3. Reads results from Khong DB for closed markets (khong generates via SWP)
+ * 4. Dispatches webhooks to agents
  */
 export async function GET(request: NextRequest) {
   // Verify Vercel cron secret
@@ -31,7 +44,7 @@ export async function GET(request: NextRequest) {
   const now = new Date();
   const today = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
 
-  const stats = { seeded: 0, closed: 0, generated: 0, pushed: 0, notified: 0, errors: 0 };
+  const stats = { seeded: 0, closed: 0, synced: 0, notified: 0, errors: 0 };
 
   // Step 1: Seed today's schedule if not already done
   {
@@ -92,14 +105,14 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Step 3: Generate results for closed markets without winning numbers
-  interface GeneratedResult {
+  // Step 3: Read results from Khong for closed markets without winning numbers
+  interface SyncedResult {
     source: string;
     market: string;
     top: string;
     bottom: string;
   }
-  const generatedResults: GeneratedResult[] = [];
+  const syncedResults: SyncedResult[] = [];
 
   {
     const { data: unresolvedMarkets } = await supabase
@@ -111,99 +124,117 @@ export async function GET(request: NextRequest) {
       .lte('close_time', now.toISOString());
 
     if (unresolvedMarkets && unresolvedMarkets.length > 0) {
-      const weekday = isWeekday(today);
+      const khong = createKhongClient();
+      const khongToLocal = buildKhongToLocalMap();
+
+      // Collect all khong template IDs we need to look up
+      const templateIdsNeeded: number[] = [];
+      const localRowsByTemplate = new Map<number, typeof unresolvedMarkets>();
 
       for (const row of unresolvedMarkets) {
-        let top: string;
-        let bottom: string;
-        let generationMethod: string;
-        let seed: string | null = null;
-        let referencePrice: string | null = null;
-
-        if (weekday) {
-          // Try stock price derivation first on weekdays
-          const yahooSymbol = getYahooSymbol(row.market);
-          const priceData = yahooSymbol ? await fetchStockPrice(yahooSymbol) : null;
-
-          if (priceData) {
-            const derived = deriveNumbersFromPrice(priceData.price, row.source, row.market, today);
-            top = derived.threeDigit;
-            bottom = derived.twoDigit;
-            generationMethod = 'stock_ref';
-            referencePrice = priceData.price;
-          } else {
-            // Fallback to Provably Fair
-            seed = crypto.randomBytes(32).toString('hex');
-            const derived = deriveNumbersFromSeed(seed, row.source, row.market, today);
-            top = derived.threeDigit;
-            bottom = derived.twoDigit;
-            generationMethod = 'auto';
+        // Find the khong template ID for this source:market
+        for (const [templateId, mapping] of khongToLocal) {
+          if (mapping.source === row.source && mapping.market === row.market) {
+            templateIdsNeeded.push(templateId);
+            if (!localRowsByTemplate.has(templateId)) {
+              localRowsByTemplate.set(templateId, []);
+            }
+            localRowsByTemplate.get(templateId)!.push(row);
+            break;
           }
-        } else {
-          // Weekend: Provably Fair only
-          seed = crypto.randomBytes(32).toString('hex');
-          const derived = deriveNumbersFromSeed(seed, row.source, row.market, today);
-          top = derived.threeDigit;
-          bottom = derived.twoDigit;
-          generationMethod = 'auto';
         }
+      }
 
-        const resultTime = now.toISOString();
-        const resultHash = computeResultHash({
-          source: row.source,
-          market: row.market,
-          roundDate: today,
-          winningNumber: top,
-          winningNumber2d: bottom,
-          resultTime,
-          referencePrice,
-          seed,
-        });
+      if (templateIdsNeeded.length > 0) {
+        // Find today's lotteries in Khong for these templates
+        const startOfDay = `${today}T00:00:00+07:00`;
+        const endOfDay = `${today}T23:59:59+07:00`;
 
-        const { error: updateError } = await supabase
-          .from('stock_results')
-          .update({
-            winning_number: top,
-            winning_number_2d: bottom,
-            status: 'resulted',
-            result_time: resultTime,
-            generation_method: generationMethod,
-            generation_seed: seed,
-            reference_price: referencePrice,
-            result_hash: resultHash,
-            updated_at: now.toISOString(),
-          })
-          .eq('id', row.id)
-          .is('winning_number', null);
+        const { data: khongLotteries } = await khong
+          .from('lotteries')
+          .select('id, ltp, status')
+          .in('ltp', templateIdsNeeded)
+          .gte('close', startOfDay)
+          .lte('close', endOfDay);
 
-        if (!updateError) {
-          stats.generated++;
-          generatedResults.push({ source: row.source, market: row.market, top, bottom });
-        } else {
-          stats.errors++;
+        if (khongLotteries && khongLotteries.length > 0) {
+          // Only look at lotteries that have been fully processed (status 3 = COMPLETED)
+          // Excludes CALCULATING(4), CANCELLED(5), NO_RESULT(7)
+          const completedLotteries = khongLotteries.filter(l => l.status === 3);
+          const lotteryIds = completedLotteries.map(l => l.id);
+
+          if (lotteryIds.length > 0) {
+            // Fetch results from lottery_metas
+            const { data: metas } = await khong
+              .from('lottery_metas')
+              .select('lottery_id, top, bottom')
+              .in('lottery_id', lotteryIds)
+              .is('meta_key', null)
+              .not('top', 'is', null)
+              .not('bottom', 'is', null);
+
+            if (metas && metas.length > 0) {
+              // Build lottery_id → template_id map
+              const lotteryToTemplate = new Map(completedLotteries.map(l => [l.id, l.ltp]));
+
+              for (const meta of metas) {
+                const templateId = lotteryToTemplate.get(meta.lottery_id);
+                if (!templateId) continue;
+
+                const localRows = localRowsByTemplate.get(templateId);
+                if (!localRows) continue;
+
+                for (const localRow of localRows) {
+                  const resultTime = now.toISOString();
+                  const resultHash = computeResultHash({
+                    source: localRow.source,
+                    market: localRow.market,
+                    roundDate: today,
+                    winningNumber: meta.top,
+                    winningNumber2d: meta.bottom,
+                    resultTime,
+                    referencePrice: null,
+                    seed: null,
+                  });
+
+                  const { error: updateError } = await supabase
+                    .from('stock_results')
+                    .update({
+                      winning_number: meta.top,
+                      winning_number_2d: meta.bottom,
+                      status: 'resulted',
+                      result_time: resultTime,
+                      generation_method: 'khong_sync',
+                      generation_seed: null,
+                      reference_price: null,
+                      result_hash: resultHash,
+                      updated_at: now.toISOString(),
+                    })
+                    .eq('id', localRow.id)
+                    .is('winning_number', null);
+
+                  if (!updateError) {
+                    stats.synced++;
+                    syncedResults.push({
+                      source: localRow.source,
+                      market: localRow.market,
+                      top: meta.top,
+                      bottom: meta.bottom,
+                    });
+                  } else {
+                    stats.errors++;
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
   }
 
-  // Step 4: Push generated results to Khong DB
-  if (generatedResults.length > 0) {
-    const pushParams = generatedResults.map(r => ({
-      source: r.source as 'vvip' | 'platinum',
-      market: r.market,
-      winningNumber: r.top,
-      winningNumber2d: r.bottom,
-      roundDate: today,
-    }));
-
-    const { pushed, failed } = await pushBatchToKhong(pushParams);
-    stats.pushed = pushed;
-    if (failed > 0) stats.errors += failed;
-  }
-
-  // Step 5: Dispatch webhooks to agents (fire-and-forget — must not block cron)
-  // dispatchWebhooks() has retry delays up to 5min, so we cannot await it.
-  for (const r of generatedResults) {
+  // Step 4: Dispatch webhooks to agents (fire-and-forget)
+  for (const r of syncedResults) {
     dispatchWebhooks({
       event: 'result.published',
       source: r.source,

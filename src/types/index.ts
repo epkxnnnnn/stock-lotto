@@ -18,7 +18,7 @@ export interface Market {
   stockIndex: string;      // Human-readable e.g. "Nikkei 225"
 }
 
-export type GenerationMethod = 'auto' | 'manual' | 'stock_ref';
+export type GenerationMethod = 'auto' | 'manual' | 'stock_ref' | 'khong_sync';
 
 export interface StockResult {
   id: string;
